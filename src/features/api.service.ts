@@ -4,7 +4,7 @@ import config from '@/src/config'
 
 export const appApi = createApi({
   reducerPath: 'appApi',
-  tagTypes: ['Wallet', 'Transaction', 'Plan', 'Category', 'User', 'Message'],
+  tagTypes: ['Wallet', 'Transaction', 'Plan', 'Category', 'User', 'Message', 'Invite'],
   baseQuery,
   endpoints: (builder) => ({
 }),

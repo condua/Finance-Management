@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "WalletPal",
-    "slug": "mobile-tracking",
+    "slug": "my-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./src/assets/icons/logo.png",
@@ -14,7 +14,8 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSCameraUsageDescription": "${PRODUCT_NAME} needs access to your Camera"
+        "NSCameraUsageDescription": "$(PRODUCT_NAME) needs access to your Camera.",
+        "NSMicrophoneUsageDescription": "$(PRODUCT_NAME) needs access to your Microphone."
       },
       "bundleIdentifier": "com.trungnghia202.mobileapp"
     },
@@ -26,7 +27,8 @@
       "softwareKeyboardLayoutMode": "pan",
       "package": "com.trungnghia202.mobileapp",
       "permissions": [
-        "android.permission.CAMERA"
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "web": {
@@ -40,7 +42,6 @@
         "react-native-vision-camera",
         {
           "cameraPermissionText": "$(PRODUCT_NAME) needs access to your Camera.",
-
           "enableMicrophonePermission": true,
           "microphonePermissionText": "$(PRODUCT_NAME) needs access to your Microphone."
         }
@@ -54,14 +55,13 @@
         "origin": false
       },
       "eas": {
-        "projectId": "4398ea95-cd58-4bc8-9006-5cdade34bdb0"
+        "projectId": "5c3703ad-467a-4bd4-b200-13e4ff7fed6d"
       }
     },
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
+    "runtimeVersion": "1.0.0",
     "updates": {
-      "url": "https://u.expo.dev/4398ea95-cd58-4bc8-9006-5cdade34bdb0"
-    }
+      "url": "https://u.expo.dev/5c3703ad-467a-4bd4-b200-13e4ff7fed6d"
+    },
+    "owner": "condua1755"
   }
 }

@@ -48,6 +48,7 @@
   "signup": {
     "title": "Welcome to WalletPal",
     "description": "Enter your Email & Password to Sign up",
+    "name":"Full Name",
     "email": "Email",
     "password": "Password",
     "confirm": "Confirm Password",
@@ -202,7 +203,9 @@
     "lessthan": "Less than your average income",
     "morethan": "More than your average income",
     "notransactions": "No transactions yet",
-    "chooseicon": "Choose Icon"
+    "chooseicon": "Choose Icon",
+    "viewmembers":"View members",
+    "discuss":"Discuss"
   },
   "analytics": {
     "header": "Analytics",
@@ -300,5 +303,19 @@
   },
   "input":{
     "send":"Send message"
+  },
+  "members":{
+    "all":"All",
+    "adminstrators":"Adminstrators",
+    "admin": "Admin member",
+    "admins": "Admin members",
+    "member":"Member",
+    "members":"Members",
+    "owner":"Wallet owner",
+    "adminrole":"Wallet admin"
+  },
+  "titles":{
+    "chat":"Group chat",
+    "member":"View members"
   }
 }

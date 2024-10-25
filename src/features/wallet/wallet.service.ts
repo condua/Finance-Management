@@ -13,7 +13,17 @@ interface WalletRequest {
   type: 'shared' | 'private',
   icon: string
 }
-
+// Define an interface for the inviteMember request
+interface InviteMemberRequest {
+  walletId: string;
+  userId: string;
+  inviterId: string;
+}
+// Define an interface for the respondToInvitation request
+interface RespondToInvitationRequest {
+  walletId: string;
+  response: 'accept' | 'decline';
+}
 export const walletApi = appApi.injectEndpoints({
   endpoints: (builder) => ({
     createFirstWallet: builder.mutation<
@@ -96,7 +106,33 @@ export const walletApi = appApi.injectEndpoints({
               { type: 'Wallet' as const, id: 'LIST' },
             ]
           : [{ type: 'Wallet', id: 'LIST' }],
-    }),    
+    }), 
+// Add inviteMember mutation here
+inviteMemberWallet: builder.mutation<Response<{ message: string }>, InviteMemberRequest>({
+  query: (body) => {
+    const { walletId, userId } = body; // Lấy walletId và userId từ body
+    return {
+      url: `${config.api.endpoints.wallets}/${walletId}/invite/${userId}`, // Đảm bảo endpoint chính xác
+      method: 'POST',
+      body: {
+        inviterId: body.inviterId, // Gửi inviterId trong body
+      },
+    };
+  },
+  invalidatesTags: [{ type: 'Wallet', id: 'LIST' }], // Điều chỉnh dựa trên cách bạn muốn xử lý cache
+}),
+
+ // Add respondToInvitation mutation here
+ respondToInvitation: builder.mutation<Response<{ message: string }>, RespondToInvitationRequest>({
+  query: (body) => ({
+    url: `${config.api.endpoints.wallets}/${body.walletId}/respond-invitation`,
+    method: 'POST',
+    body: {
+      response: body.response,
+    },
+  }),
+  invalidatesTags: [{ type: 'Wallet', id: 'LIST' }],
+}),
   }),
   overrideExisting: true,
 })
@@ -108,5 +144,6 @@ export const {
   useDeleteWalletMutation,
   useGetWalletByIdQuery,
   useGetAllWalletsQuery,
-  
+  useInviteMemberWalletMutation,
+  useRespondToInvitationMutation,
 } = walletApi

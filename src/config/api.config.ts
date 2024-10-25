@@ -1,5 +1,5 @@
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.2.58:5000'
+const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.2.57:5000'
 console.log('API_URL', API_URL)
 
 export const apiConfig = {

@@ -189,11 +189,15 @@ export interface User {
   phone?: string
   categories: string[]
   wallets: string[]
+  invitations: [{
+    wallet?: string,
+    status?: string,
+  }]
 }
 
 
 
 export type UserProfile = Pick<
   User,
-  'name' | 'gender' | 'avatar_url' | 'dob' | '_id' | 'email' | 'phone'
+  'name' | 'gender' | 'avatar_url' | 'dob' | '_id' | 'email' | 'phone' | 'invitations'
 >

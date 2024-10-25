@@ -48,6 +48,7 @@
   "signup": {
     "title": "Chào mừng đến với WalletPal",
     "description": "Nhập Email & Mật khẩu của bạn để Đăng ký",
+    "name":"Họ và tên của bạn",
     "email": "Email",
     "password": "Mật khẩu",
     "confirm": "Xác nhận mật khẩu",
@@ -202,7 +203,9 @@
     "lessthan": "Ít hơn so với thu nhập trung bình của bạn",
     "morethan": "Nhiều hơn so với thu nhập trung bình của bạn",
     "notransactions": "Chưa có giao dịch nào",
-    "chooseicon": "Chọn biểu tượng"
+    "chooseicon": "Chọn biểu tượng",
+    "viewmembers":"Xem thành viên",
+    "discuss":"Thảo luận" 
   },
   "analytics": {
     "header": "Phân tích",
@@ -301,5 +304,19 @@
   },
   "input":{
     "send":"Nhắn tin"
+  },
+  "members":{
+    "all":"Tất cả",
+    "adminstrators":"Quản trị viên",
+    "admin":"Thành viên quản trị",
+    "admins":"Thành viên quản trị",
+    "member":"Thành viên",
+    "members":"Thành viên",
+    "owner":"Trưởng nhóm",
+    "adminrole":"Quản trị viên"
+  },
+  "titles":{
+    "chat":"Thảo luận nhóm",
+    "member":"Xem thành viên"
   }
 }

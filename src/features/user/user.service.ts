@@ -51,6 +51,18 @@ export const userApi = createApi({
       transformResponse: (response: GetInfoByIdResponse) => response.metadata,
       providesTags: (result, error, userId) => [{ type: 'User', id: userId }],
     }),
+  // Corrected getAllUsers endpoint
+  getAllUsers: builder.query<UserProfile[], void>({
+    query: () => ({
+      url: `/users/allusers`, // Assuming this endpoint is structured this way
+      method: 'GET',
+    }),
+    transformResponse: (response: { metadata: UserProfile[] }) => response.metadata,
+    providesTags: (result) => 
+      result
+        ? result.map(({ _id }) => ({ type: 'User', id: _id })) // Handle array of users
+        : [],
+  }),
   }),
 });
 
@@ -58,4 +70,5 @@ export const {
   useUpdateProfileMutation,
   useGetProfileQuery,
   useGetInfoByIdQuery, // Export the new hook
+  useGetAllUsersQuery, // Export the new hook for getAllUsers
 } = userApi;

@@ -1,57 +1,62 @@
-import { useSignupMutation } from '@/src/features/auth/auth.service'
-import { setAuth } from '@/src/features/auth/authSlice'
-import { useAppDispatch } from '@/src/hooks/hooks'
-import {  Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { BrandColor, NeutralColor, TextColor } from '@/src/constants/Colors'
-import { ThemedText } from '@/src/components/ThemedText'
-import { useLocale } from '@/src/hooks/useLocale'
-import { TextType } from '@/src/types/text'
-import Input from '@/src/components/Input'
-import { useEffect, useMemo, useState } from 'react'
-import { EmailRegExp, PasswordRegExp } from '@/src/utils/RegExp'
-import Button from '@/src/components/buttons/Button'
-import { Ionicons } from '@expo/vector-icons'
-import { Eye, EyeOff } from 'react-native-feather'
-import { useRouter } from 'expo-router'
-import { isEntityError } from '@/src/utils/helpers'
+import { useSignupMutation } from "@/src/features/auth/auth.service";
+import { setAuth } from "@/src/features/auth/authSlice";
+import { useAppDispatch } from "@/src/hooks/hooks";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { BrandColor, NeutralColor, TextColor } from "@/src/constants/Colors";
+import { ThemedText } from "@/src/components/ThemedText";
+import { useLocale } from "@/src/hooks/useLocale";
+import { TextType } from "@/src/types/text";
+import Input from "@/src/components/Input";
+import { useEffect, useMemo, useState } from "react";
+import { NameRegExp, EmailRegExp, PasswordRegExp } from "@/src/utils/RegExp";
+import Button from "@/src/components/buttons/Button";
+import { Ionicons } from "@expo/vector-icons";
+import { Eye, EyeOff } from "react-native-feather";
+import { useRouter } from "expo-router";
+import { isEntityError } from "@/src/utils/helpers";
 
 interface FormData {
-  email: string
-  password: string
+  name: string;
+  email: string;
+  password: string;
 }
 
 const initialState: FormData = {
-  email: '',
-  password: '',
-}
+  name: "",
+  email: "",
+  password: "",
+};
 
 type FormError =
   | {
-      [key in keyof typeof initialState]: string
+      [key in keyof typeof initialState]: string;
     }
-  | null
+  | null;
 
 const Page = () => {
-  const router = useRouter()
-  const { t } = useLocale()
-  const [isSecure, setIsSecure] = useState(true)
-  const [form, setForm] = useState<FormData>(initialState)
-  const [state, setState] = useState<'normal' | 'focused' | 'typing' | 'error'>('normal')
+  const router = useRouter();
+  const { t } = useLocale();
+  const [isSecure, setIsSecure] = useState(true);
+  const [form, setForm] = useState<FormData>(initialState);
+  const [state, setState] = useState<"normal" | "focused" | "typing" | "error">(
+    "normal"
+  );
   const [isValidated, setIsValidated] = useState({
+    name: false,
     email: false,
     password: false,
-  })
+  });
 
-  const [register, signUpResult] = useSignupMutation()
-  const dispatch = useAppDispatch()
+  const [register, signUpResult] = useSignupMutation();
+  const dispatch = useAppDispatch();
   const errorForm: FormError = useMemo(() => {
-    const errorResult = signUpResult.error
+    const errorResult = signUpResult.error;
     if (isEntityError(errorResult)) {
-      console.log(errorResult.data)
-      return errorResult?.data.error as FormError
+      console.log(errorResult.data);
+      return errorResult?.data.error as FormError;
     }
-    return null
-  }, [signUpResult])
+    return null;
+  }, [signUpResult]);
   useEffect(() => {
     if (signUpResult.data) {
       dispatch(
@@ -59,59 +64,87 @@ const Page = () => {
           tokens: signUpResult.data.tokens,
           user: signUpResult.data.user,
           isAuthenticated: true,
-          walletId: '',
+          walletId: "",
         })
-      )
+      );
     }
-  }, [signUpResult])
+  }, [signUpResult]);
 
   const handleRegister = async () => {
     try {
-      await register(form).unwrap()
+      await register(form).unwrap();
     } catch (error) {
-      console.log('🚀 ~ handleRegister ~ error:', error)
+      console.log("🚀 ~ handleRegister ~ error:", error);
     }
-  }
+  };
 
   const toggleSecure = () => {
-    setIsSecure((prev) => !prev)
-  }
+    setIsSecure((prev) => !prev);
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.logo}>
-        <Image source={require('@/src/assets/icons/logo.png')} style={styles.img} />
+        <Image
+          source={require("@/src/assets/icons/logo.png")}
+          style={styles.img}
+        />
       </View>
       <View style={styles.welcome}>
-        <ThemedText type={TextType.Title22Bold} color={TextColor.Primary} style={styles.textAlign}>
-          {t('signup.title')}
+        <ThemedText
+          type={TextType.Title22Bold}
+          color={TextColor.Primary}
+          style={styles.textAlign}
+        >
+          {t("signup.title")}
         </ThemedText>
         <ThemedText
           type={TextType.SubheadlineRegular}
           color={TextColor.Secondary}
           style={styles.textAlign}
         >
-          {t('signup.description')}
+          {t("signup.description")}
         </ThemedText>
       </View>
       <View style={styles.form}>
         <Input
-          value={form.email}
-          onChangeText={(text) => setForm({ ...form, email: text })}
-          placeholder={t('signup.email')}
+          value={form.name}
+          onChangeText={(text) => setForm({ ...form, name: text })}
+          placeholder={t("signup.name")}
           buttonLeft={() => (
             <Image
-              source={require('@/src/assets/icons/mail.png')}
+              source={require("@/src/assets/icons/account.jpg")}
               width={24}
               height={24}
-              resizeMode='contain'
+              resizeMode="contain"
             />
           )}
           validationOptions={{
-            pattern: [EmailRegExp, 'Invalid email address'],
+            pattern: [NameRegExp, "Name can only contain letters and spaces"],
           }}
           validate={(isValid: boolean) => {
-            setIsValidated((prev) => ({ ...prev, email: isValid }))
+            setIsValidated((prev) => ({ ...prev, name: isValid }));
+          }}
+          error={!!errorForm?.name}
+          errorMessage={errorForm?.name}
+        />
+        <Input
+          value={form.email}
+          onChangeText={(text) => setForm({ ...form, email: text })}
+          placeholder={t("signup.email")}
+          buttonLeft={() => (
+            <Image
+              source={require("@/src/assets/icons/mail.png")}
+              width={24}
+              height={24}
+              resizeMode="contain"
+            />
+          )}
+          validationOptions={{
+            pattern: [EmailRegExp, "Invalid email address"],
+          }}
+          validate={(isValid: boolean) => {
+            setIsValidated((prev) => ({ ...prev, email: isValid }));
           }}
           error={!!errorForm?.email}
           errorMessage={errorForm?.email}
@@ -119,14 +152,24 @@ const Page = () => {
         <Input
           value={form.password}
           onChangeText={(text) => setForm({ ...form, password: text })}
-          placeholder={t('signup.password')}
-          buttonLeft={() => <Image source={require('@/src/assets/icons/lock-outline.png')} />}
+          placeholder={t("signup.password")}
+          buttonLeft={() => (
+            <Image source={require("@/src/assets/icons/lock-outline.png")} />
+          )}
           buttonRight={() => (
             <TouchableOpacity onPress={toggleSecure}>
               {isSecure ? (
-                <EyeOff width={24} height={24} color={BrandColor.PrimaryColor[400]} />
+                <EyeOff
+                  width={24}
+                  height={24}
+                  color={BrandColor.PrimaryColor[400]}
+                />
               ) : (
-                <Eye width={24} height={24} color={BrandColor.PrimaryColor[400]} />
+                <Eye
+                  width={24}
+                  height={24}
+                  color={BrandColor.PrimaryColor[400]}
+                />
               )}
             </TouchableOpacity>
           )}
@@ -134,34 +177,39 @@ const Page = () => {
           validationOptions={{
             pattern: [
               PasswordRegExp,
-              'Password must contain at least one number and one uppercase and lowercase letter',
+              "Password must contain at least one number and one uppercase and lowercase letter",
             ],
-            minLength: [6, 'Password must be at least 6 characters'],
+            minLength: [6, "Password must be at least 6 characters"],
           }}
           validate={(isValid: boolean) => {
-            setIsValidated((prev) => ({ ...prev, password: isValid }))
+            setIsValidated((prev) => ({ ...prev, password: isValid }));
           }}
         />
       </View>
 
       <View style={styles.signIn}>
         <Button
-          text={t('signup.signup')}
-          size='large'
-          state={isValidated.email && isValidated.password ? 'normal' : 'disabled'}
+          text={t("signup.signup")}
+          size="large"
+          state={
+            isValidated.email && isValidated.password ? "normal" : "disabled"
+          }
           onPress={handleRegister}
           textColor={NeutralColor.White[50]}
-          type='primary'
+          type="primary"
           isLoading={signUpResult.isLoading}
         />
       </View>
       <View style={styles.signUpRedirect}>
         <ThemedText type={TextType.FootnoteRegular} color={TextColor.Primary}>
-          {t('signup.haveaccount')}
+          {t("signup.haveaccount")}
         </ThemedText>
-        <TouchableOpacity onPress={() => router.navigate('/login')}>
-          <ThemedText type={TextType.FootnoteSemibold} color={BrandColor.Blue[600]}>
-            {t('signup.signin')}
+        <TouchableOpacity onPress={() => router.navigate("/login")}>
+          <ThemedText
+            type={TextType.FootnoteSemibold}
+            color={BrandColor.Blue[600]}
+          >
+            {t("signup.signin")}
           </ThemedText>
         </TouchableOpacity>
       </View>
@@ -194,16 +242,16 @@ const Page = () => {
         />
       </View> */}
     </View>
-  )
-}
-export default Page
+  );
+};
+export default Page;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: NeutralColor.White[50],
   },
   logo: {
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 32,
   },
   img: {
@@ -216,11 +264,11 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   textAlign: {
-    textAlign: 'center',
+    textAlign: "center",
   },
   form: {
     marginTop: 24,
-    width: '100%',
+    width: "100%",
     paddingHorizontal: 24,
     gap: 22,
   },
@@ -230,15 +278,15 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingHorizontal: 12,
     paddingVertical: 14,
-    alignItems: 'center',
+    alignItems: "center",
   },
   forgotPassword: {
     marginTop: 24,
-    width: '100%',
+    width: "100%",
     paddingHorizontal: 24,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   signIn: {
     marginTop: 48,
@@ -247,9 +295,9 @@ const styles = StyleSheet.create({
   signUpRedirect: {
     marginTop: 24,
     paddingHorizontal: 24,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 4,
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   oauth: {
     marginTop: 24,
@@ -260,4 +308,4 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: BrandColor.Gray[400],
   },
-})
+});

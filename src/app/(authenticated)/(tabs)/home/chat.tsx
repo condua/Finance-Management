@@ -101,6 +101,7 @@ const ChatBubble: FC<ChatBubbleProps> = ({ message }) => {
   const auth = useAppSelector((state) => state.auth);
   const userId = auth.user._id;
   const isCurrentUser = message.userId === userId;
+
   //   console.log(auth.user.avatar_url);
   //   console.log(<UserProfileComponent userId={isCurrentUser} />);
   return (
@@ -157,7 +158,7 @@ const Chat: FC = () => {
     isLoading,
     refetch,
   } = useGetAllMessagesByWalletIdQuery(walletId);
-  // Create a ref for the FlatList
+
   const flatListRef = useRef<FlatList<any>>(null);
   // Use useEffect to scroll to the bottom when messages change
 

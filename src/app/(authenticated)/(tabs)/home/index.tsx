@@ -56,7 +56,7 @@ const Home = () => {
   const { data, isFetching: isFetchingWallet } = useGetWalletByIdQuery({
     walletId: walletId,
   });
-
+  // console.log(data);
   const {
     data: transactions,
     isLoading: isLoadingTransactions,
@@ -94,8 +94,32 @@ const Home = () => {
                   style={styles.notificationIcon}
                 />
               </TouchableOpacity> */}
+              <TouchableOpacity
+                style={styles.headerLeftContainer}
+                onPress={() =>
+                  router.navigate({
+                    pathname: "/(authenticated)/(tabs)/home/notifications",
+                    // params: { type: "expense" },
+                  })
+                }
+              >
+                <View style={styles.notificationButton}>
+                  <Image
+                    source={require("@/src/assets/icons/bell.jpg")}
+                    style={styles.notificationIcon}
+                  />
+                </View>
+                <Text style={styles.notificationText}>Xem lời mời</Text>
+              </TouchableOpacity>
             </View>
           ),
+          headerLeft: () => (
+            <View>
+              <TouchableOpacity>
+                <Text>Thông báo</Text>
+              </TouchableOpacity>
+            </View>
+          ), // Ensure this is returning the JSX
         }}
       />
       {<Loading isLoading={isFetching || isFetchingWallet} text="Loading.." />}
@@ -147,38 +171,67 @@ const Home = () => {
             </ThemedText> */}
           </View>
         </View>
-        <View style={styles.operationSection}>
-          <TouchableOpacity
-            style={[styles.btn50, { backgroundColor: BrandColor.Red[50] }]}
-          >
-            <View>
-              <ThemedText
-                color={TextColor.Secondary}
-                type={TextType.Caption11Regular}
+        {data?.type === "shared" && (
+          <View style={styles.operationSection}>
+            <TouchableOpacity
+              style={[styles.btn50, { backgroundColor: BrandColor.Yellow[50] }]}
+              onPress={() =>
+                router.navigate({
+                  pathname: "/(authenticated)/(tabs)/home/members",
+                  // params: { type: "expense" },
+                })
+              }
+            >
+              <View
+                style={[
+                  styles.icon,
+                  { backgroundColor: BrandColor.Yellow[500] },
+                ]}
               >
-                Xem thành viên
-              </ThemedText>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.btn50, { backgroundColor: BrandColor.Red[50] }]}
-            onPress={() =>
-              router.navigate({
-                pathname: "/(authenticated)/(tabs)/home/chat",
-                // params: { type: "expense" },
-              })
-            }
-          >
-            <View>
+                <Ionicons
+                  name="people-outline"
+                  size={20}
+                  color={BrandColor.Yellow[900]}
+                />
+              </View>
               <ThemedText
-                color={TextColor.Secondary}
-                type={TextType.Caption11Regular}
+                color={BrandColor.Yellow[700]}
+                type={TextType.FootnoteSemibold}
               >
-                Thảo luận
+                {t("home.viewmembers")}
               </ThemedText>
-            </View>
-          </TouchableOpacity>
-        </View>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.btn50, { backgroundColor: BrandColor.Green[50] }]}
+              onPress={() =>
+                router.navigate({
+                  pathname: "/(authenticated)/(tabs)/home/chat",
+                  // params: { type: "expense" },
+                })
+              }
+            >
+              <View
+                style={[
+                  styles.icon,
+                  { backgroundColor: BrandColor.Green[500] },
+                ]}
+              >
+                <Ionicons
+                  name="chatbubbles-sharp"
+                  size={18}
+                  color={BrandColor.Green[900]}
+                />
+              </View>
+              <ThemedText
+                color={BrandColor.Green[900]}
+                type={TextType.FootnoteSemibold}
+              >
+                {t("home.discuss")}
+              </ThemedText>
+            </TouchableOpacity>
+          </View>
+        )}
+
         <View style={styles.operationSection}>
           <TouchableOpacity
             style={[styles.btn50, { backgroundColor: BrandColor.Red[50] }]}
@@ -407,6 +460,24 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+  },
+  headerLeftContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  notificationButton: {
+    height: 38,
+    width: 38,
+    borderRadius: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: NeutralColor.GrayLight[100],
+  },
+  notificationText: {
+    marginLeft: 8,
+    color: TextColor.Primary,
+    fontSize: 16, // Adjust the size as needed
   },
   link: {
     color: "#2A85FF",

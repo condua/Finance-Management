@@ -22,6 +22,7 @@ import categoryReducer from '@/src/features/category/categorySlice';
 import transactionReducer from '@/src/features/transaction/transactionSlice';
 import userReducer from '@/src/features/user/UserSlice';
 import messageReducer from '@/src/features/message/messageSlice'; // Thêm dòng này
+import inviteReducer from '@/src/features/invite/inviteSlice';
 import { userApi } from '@/src/features/user/user.service';
 import { appApi } from '@/src/features/api.service';
 import { rtkQueryErrorLogger } from '@/src/services/errorHandling.service';
@@ -42,6 +43,8 @@ const rootReducer = combineReducers({
   transaction: transactionReducer,
   user: userReducer,
   messages: messageReducer, // Thêm dòng này
+  invite: inviteReducer, // Add inviteReducer here
+
   [userApi.reducerPath]: userApi.reducer,
 });
 
