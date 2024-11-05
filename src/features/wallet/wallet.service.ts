@@ -21,6 +21,7 @@ interface InviteMemberRequest {
 }
 // Define an interface for the respondToInvitation request
 interface RespondToInvitationRequest {
+  userId? : string,
   walletId: string;
   response: 'accept' | 'decline';
 }
@@ -125,13 +126,16 @@ inviteMemberWallet: builder.mutation<Response<{ message: string }>, InviteMember
  // Add respondToInvitation mutation here
  respondToInvitation: builder.mutation<Response<{ message: string }>, RespondToInvitationRequest>({
   query: (body) => ({
-    url: `${config.api.endpoints.wallets}/${body.walletId}/respond-invitation`,
+    url: `${config.api.endpoints.wallets}/${body.walletId}/respond`,
     method: 'POST',
     body: {
       response: body.response,
     },
   }),
-  invalidatesTags: [{ type: 'Wallet', id: 'LIST' }],
+  invalidatesTags: (result, error, body) => [
+    { type: 'User', id: 'PARTIAL-LIST' }, // Làm mới danh sách Wallet
+    { type: 'User', id: body?.userId }, // Làm mới dữ liệu của User sau khi chấp nhận/từ chối
+  ],
 }),
   }),
   overrideExisting: true,

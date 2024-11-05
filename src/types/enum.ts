@@ -190,8 +190,10 @@ export interface User {
   categories: string[]
   wallets: string[]
   invitations: [{
+    inviter?: string,
     wallet?: string,
     status?: string,
+    _id? : string,
   }]
 }
 

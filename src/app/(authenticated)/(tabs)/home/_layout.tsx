@@ -43,9 +43,11 @@ const Layout = () => {
       <Stack.Screen
         name="notifications"
         options={{
-          title: `Lời mời vào nhóm`,
+          title: `${t("titles.invitations")}`,
         }}
       />
+      <Stack.Screen name="promote" options={{ title: "Promote" }} />
+
       <Stack.Screen
         name="history"
         options={{ title: "History", animation: "fade_from_bottom" }}

@@ -7,6 +7,7 @@ import { ThemedText } from "@/src/components/ThemedText";
 import WalletItem from "@/src/components/WalletItem";
 import { BackgroundColor, BrandColor, TextColor } from "@/src/constants/Colors";
 import { setDefaultWallet } from "@/src/features/auth/authSlice";
+import { useGetProfileQuery } from "@/src/features/user/user.service";
 import { useGetAllWalletsQuery } from "@/src/features/wallet/wallet.service";
 import { useAppDispatch, useAppSelector } from "@/src/hooks/hooks";
 import { useLocale } from "@/src/hooks/useLocale";
@@ -37,7 +38,7 @@ const Page = () => {
   } = useSettings().styleMoneyLabel;
 
   const getAllWallets = useGetAllWalletsQuery();
-
+  console.log(getAllWallets?.currentData?.length);
   const handleSelectWallet = (_id: string) => {
     if (walletId === _id) return;
     dispatch(setDefaultWallet(_id));

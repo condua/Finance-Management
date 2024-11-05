@@ -21,7 +21,7 @@ import { TextType } from "@/src/types/text";
 import { Entypo, Ionicons } from "@expo/vector-icons";
 import { useAppDispatch, useAppSelector } from "@/src/hooks/hooks";
 import { useGetWalletByIdQuery } from "@/src/features/wallet/wallet.service";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { formatter } from "@/src/utils/formatAmount";
 import { Plus } from "react-native-feather";
 import InfoButton from "@/src/components/buttons/InfoButton";
@@ -35,6 +35,11 @@ import { formatValue } from "react-native-currency-input-fields";
 import { useSettings } from "@/src/hooks/useSetting";
 import { getCurrencySymbol } from "@/src/utils/getCurrencySymbol";
 import { abbrValueFormat } from "@/src/utils/abbrValueFormat";
+import {
+  useGetInfoByIdQuery,
+  useGetProfileQuery,
+} from "@/src/features/user/user.service";
+import { useFocusEffect } from "@react-navigation/native";
 
 const MAX_RECENT_TRANSACTIONS = 20;
 
@@ -53,10 +58,29 @@ const Home = () => {
   } = useSettings().styleMoneyLabel;
   const [type, setType] = useState("expense");
   const { walletId } = useAppSelector((state) => state.auth);
+  const { user } = useAppSelector((state) => state.auth);
   const { data, isFetching: isFetchingWallet } = useGetWalletByIdQuery({
     walletId: walletId,
   });
   // console.log(data);
+  const { data: getUser, refetch: refetchProfile } = useGetInfoByIdQuery(
+    user._id
+  );
+  const invitations = getUser?.invitations || [];
+
+  console.log(getUser?.invitations.length);
+  useFocusEffect(
+    useCallback(() => {
+      if (user) {
+        refetchProfile(); // Refetch profile data when coming back to this screen
+      }
+    }, [user]) // Dependency on user to make sure it refetches if the user data changes
+  );
+  useEffect(() => {
+    if (user) {
+      refetchProfile(); // Refetch profile data when 'user' changes
+    }
+  }, [user]); // Adding 'user' as a dependency to reload on change
   const {
     data: transactions,
     isLoading: isLoadingTransactions,
@@ -109,17 +133,32 @@ const Home = () => {
                     style={styles.notificationIcon}
                   />
                 </View>
-                <Text style={styles.notificationText}>Xem lời mời</Text>
+                {invitations.length > 0 && (
+                  <Text
+                    style={{
+                      position: "absolute",
+                      left: 30,
+                      top: -2,
+                      color: "red",
+                    }}
+                  >
+                    {invitations.length}
+                  </Text>
+                )}
+
+                <Text style={styles.notificationText}>
+                  {t("home.invitations")}
+                </Text>
               </TouchableOpacity>
             </View>
           ),
-          headerLeft: () => (
-            <View>
-              <TouchableOpacity>
-                <Text>Thông báo</Text>
-              </TouchableOpacity>
-            </View>
-          ), // Ensure this is returning the JSX
+          // headerLeft: () => (
+          //   <View>
+          //     <TouchableOpacity>
+          //       <Text>Thông báo</Text>
+          //     </TouchableOpacity>
+          //   </View>
+          // ), // Ensure this is returning the JSX
         }}
       />
       {<Loading isLoading={isFetching || isFetchingWallet} text="Loading.." />}
@@ -473,6 +512,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 1,
     borderColor: NeutralColor.GrayLight[100],
+    position: "relative",
   },
   notificationText: {
     marginLeft: 8,

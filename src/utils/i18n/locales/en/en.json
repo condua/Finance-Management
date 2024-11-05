@@ -205,7 +205,8 @@
     "notransactions": "No transactions yet",
     "chooseicon": "Choose Icon",
     "viewmembers":"View members",
-    "discuss":"Discuss"
+    "discuss":"Discuss",
+    "invitations":"View invitations"
   },
   "analytics": {
     "header": "Analytics",
@@ -312,10 +313,15 @@
     "member":"Member",
     "members":"Members",
     "owner":"Wallet owner",
-    "adminrole":"Wallet admin"
+    "adminrole":"Wallet admin",
+    "alert":"Sorry! Your search does not match any results",
+    "pending":"Pending",
+    "search":"Type email or fullname to search for users",
+    "searchPlaceHolder":"Search by email or name"
   },
   "titles":{
     "chat":"Group chat",
-    "member":"View members"
+    "member":"View members",
+    "invitations":"Invitations"
   }
 }

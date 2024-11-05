@@ -205,7 +205,8 @@
     "notransactions": "Chưa có giao dịch nào",
     "chooseicon": "Chọn biểu tượng",
     "viewmembers":"Xem thành viên",
-    "discuss":"Thảo luận" 
+    "discuss":"Thảo luận" ,
+    "invitations":"Xem lời mời"
   },
   "analytics": {
     "header": "Phân tích",
@@ -313,10 +314,15 @@
     "member":"Thành viên",
     "members":"Thành viên",
     "owner":"Trưởng nhóm",
-    "adminrole":"Quản trị viên"
+    "adminrole":"Quản trị viên",
+    "alert": "Xin lỗi! Tìm kiếm của bạn không phù hợp với bất kỳ kết quả nào.",
+    "pending": "Đang chờ",
+    "search":"Nhập email hoặc tên để tìm kiếm người dùng",
+    "searchPlaceHolder":"Tìm kiếm bằng email hoặc tên người dùng"
   },
   "titles":{
     "chat":"Thảo luận nhóm",
-    "member":"Xem thành viên"
+    "member":"Xem thành viên",
+    "inviations":"Lời mời vào nhóm"
   }
 }

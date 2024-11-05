@@ -67,8 +67,9 @@ import { messageApi } from "./../../../../features/message/message.service";
 import { useGetInfoByIdQuery } from "@/src/features/user/user.service";
 import { useCreateMessageMutation } from "./../../../../features/message/message.service";
 import { useGetWalletByIdQuery } from "@/src/features/wallet/wallet.service";
-import { useIsFocused } from "@react-navigation/native"; // Import hook này nếu bạn dùng React Navigation
+import { useIsFocused, useNavigation } from "@react-navigation/native"; // Import hook này nếu bạn dùng React Navigation
 import { blue } from "react-native-reanimated/lib/typescript/reanimated2/Colors";
+import Promote from "./promote";
 
 const DEFAULT_LIMIT = 20;
 const screenHeight = Dimensions.get("window").height;
@@ -87,12 +88,21 @@ type MessageType = {
 };
 const UserProfileComponent = ({ userId, owner, admins }) => {
   const user = useGetInfoByIdQuery(userId);
+  // console.log(admins);
   const { t } = useLocale();
   const avatar =
     user.currentData?.avatar_url ||
     "https://static-00.iconduck.com/assets.00/avatar-icgon-512x512-gu21ei4u.png";
+  // console.log(user);
+  const router = useRouter();
+  const navigate = useNavigation;
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const openModal = () => setModalVisible(true);
+  const closeModal = () => setModalVisible(false);
+
   return (
-    <TouchableOpacity style={styles.userContainer}>
+    <TouchableOpacity style={styles.userContainer} onPress={openModal}>
       {user && <Image style={styles.avatar} source={{ uri: avatar }} />}
       <View>
         <ThemedText color={TextColor.Primary}>
@@ -110,6 +120,14 @@ const UserProfileComponent = ({ userId, owner, admins }) => {
           </ThemedText>
         )}
       </View>
+      <Promote
+        visible={modalVisible}
+        onClose={closeModal}
+        memberId={userId}
+        user={user?.currentData}
+        ownerId={owner}
+        admins={admins}
+      />
     </TouchableOpacity>
   );
 };
@@ -145,7 +163,7 @@ const members = () => {
   const members = data?.members || [];
   const owner = data?.owner || null;
   const admins = data?.admins || [];
-  console.log(owner);
+  console.log(data);
   const renderItem = ({ item: memberId }) => (
     <UserProfileComponent userId={memberId} owner={owner} admins={admins} />
   );

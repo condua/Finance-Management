@@ -13,6 +13,7 @@ import React, { useState } from "react";
 import { useGetAllUsersQuery } from "@/src/features/user/user.service"; // Import the API hook
 import { useAppSelector } from "@/src/hooks/hooks";
 import { useInviteMemberWalletMutation } from "@/src/features/wallet/wallet.service";
+import { useLocale } from "@/src/hooks/useLocale";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -28,6 +29,7 @@ interface User {
     }
   ];
 }
+
 const UserCard = ({
   user,
   walletId,
@@ -37,11 +39,10 @@ const UserCard = ({
   walletId: string;
   onInvite: (userId: string) => void;
 }) => {
-  // Check if any invitation's wallet matches the walletId
   const isWalletInvited = user.invitations.some(
     (item) => item.wallet === walletId
   );
-
+  const { t } = useLocale();
   return (
     <View style={styles.card}>
       <Image source={{ uri: user.avatar_url }} style={styles.avatar} />
@@ -50,9 +51,8 @@ const UserCard = ({
         <Text style={styles.email}>{user.email}</Text>
       </View>
 
-      {/* Conditional rendering based on the invitation status */}
       {isWalletInvited ? (
-        <Text style={{ margin: "auto" }}>Đang chờ</Text>
+        <Text style={{ margin: "auto" }}>{t("members.pending")}</Text>
       ) : (
         <TouchableOpacity
           style={styles.addButton}
@@ -65,25 +65,23 @@ const UserCard = ({
   );
 };
 
-const NoResultsView = () => (
-  <View style={styles.noResultsContainer}>
-    <Image
-      source={{
-        uri: "https://cdn4.iconfinder.com/data/icons/digital-marketing-6-2/35/285-512.png",
-      }}
-      style={styles.noResultsImage}
-    />
-    <Text style={styles.noResultsText}>
-      Sorry! Your search does not match any results
-    </Text>
-  </View>
-);
+const NoResultsView = () => {
+  const { t } = useLocale();
+  return (
+    <View style={styles.noResultsContainer}>
+      <Image
+        source={{
+          uri: "https://cdn4.iconfinder.com/data/icons/digital-marketing-6-2/35/285-512.png",
+        }}
+        style={styles.noResultsImage}
+      />
+      <Text style={styles.noResultsText}>{t("members.alert")}</Text>
+    </View>
+  );
+};
 
 const SearchMember = () => {
   const [searchQuery, setSearchQuery] = useState("");
-
-  // Fetch users from the API
-  // const { data: users, isLoading, error } = useGetAllUsersQuery();
   const {
     data: users,
     isLoading,
@@ -95,8 +93,8 @@ const SearchMember = () => {
   const auth = useAppSelector((state) => state.auth);
   const inviterId = auth.user._id;
   const { walletId } = auth;
-  const [inviteMember] = useInviteMemberWalletMutation(); // Use invite member mutation
-
+  const [inviteMember] = useInviteMemberWalletMutation();
+  const { t } = useLocale();
   const handleInvite = async (userId: string) => {
     try {
       await inviteMember({
@@ -109,7 +107,8 @@ const SearchMember = () => {
       Alert.alert("Error", "Failed to invite user. Please try again.");
     }
   };
-  if (isLoading || users === undefined) {
+
+  if (isLoading) {
     return <Text>Loading...</Text>;
   }
 
@@ -117,22 +116,27 @@ const SearchMember = () => {
     return <Text>Error loading users</Text>;
   }
 
-  const filteredUsers = users?.filter(
-    (user) =>
-      user?._id !== inviterId && // Loại trừ người dùng hiện tại
-      (user?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user?.email?.toLowerCase().includes(searchQuery.toLowerCase()))
-  ) || [{}];
+  const filteredUsers =
+    users?.filter(
+      (user) =>
+        user?._id !== inviterId && // Exclude current user
+        (user?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          user?.email?.toLowerCase().includes(searchQuery.toLowerCase()))
+    ) || [];
 
   return (
     <View style={styles.container}>
       <TextInput
         style={styles.searchBar}
-        placeholder="Search by name or email"
+        placeholder={t("members.searchPlaceHolder")}
         value={searchQuery}
         onChangeText={setSearchQuery}
       />
-      {filteredUsers && filteredUsers.length === 0 ? (
+
+      {/* Kiểm tra nếu không có nội dung tìm kiếm thì ẩn danh sách người dùng */}
+      {searchQuery === "" ? (
+        <Text style={styles.noSearchText}>{t("members.search")}</Text>
+      ) : filteredUsers.length === 0 ? (
         <NoResultsView />
       ) : (
         <FlatList
@@ -163,6 +167,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderColor: "#eee",
     borderWidth: 1,
+  },
+  noSearchText: {
+    fontSize: 16,
+    color: "#333",
+    marginTop: 20,
   },
   card: {
     width: screenWidth * 0.9,
