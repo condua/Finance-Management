@@ -323,6 +323,15 @@
   "titles":{
     "chat":"Thảo luận nhóm",
     "member":"Xem thành viên",
-    "inviations":"Lời mời vào nhóm"
+    "inviations":"Lời mời vào nhóm",
+    "invest":"Một số kênh đầu tư"
+  },
+  "investments":{
+    "gold":"Tỷ giá vàng",
+    "crypto":"Tỷ giá tiền điện tử",
+    "petro":"Tỷ giá xăng, dầu",
+    "foreign":"Tỷ giá ngoại tệ",
+    "bank":"Lãi suất ngân hàng",
+    "stock":"Chứng khoán"
   }
 }

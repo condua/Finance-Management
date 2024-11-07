@@ -322,6 +322,15 @@
   "titles":{
     "chat":"Group chat",
     "member":"View members",
-    "invitations":"Invitations"
+    "invitations":"Invitations",
+    "invest":"Investment channels"
+  },
+  "investments":{
+    "gold":"Gold rate",
+    "crypto":"Cryptocurrencies",
+    "petro":"Gasoline rate",
+    "foreign":"Exchange rate",
+    "bank":"Bank interest",
+    "stock":"Stocks"
   }
 }

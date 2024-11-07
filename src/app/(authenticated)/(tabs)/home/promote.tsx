@@ -11,6 +11,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { useAppSelector } from "@/src/hooks/hooks";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { WebView } from "react-native-webview";
 
 type Props = {
   walletId?: string;
@@ -122,6 +123,7 @@ const Promote: React.FC<Props> = ({
             </TouchableOpacity>
           </View>
         </View>
+        {/* <WebView source={{ uri: "https://blog.logrocket.com/" }} />; */}
       </TouchableWithoutFeedback>
     </Modal>
   );
@@ -195,5 +197,9 @@ const styles = StyleSheet.create({
     marginRight: 10,
     justifyContent: "center",
     borderRadius: 50,
+  },
+  webview: {
+    width: "100%",
+    height: 750,
   },
 });

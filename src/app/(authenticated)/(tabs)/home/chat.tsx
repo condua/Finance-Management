@@ -16,7 +16,7 @@ import { TextType } from "@/src/types/text";
 import { getImg } from "@/src/utils/getImgFromUri";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Pressable, SectionList } from "react-native";
+import { ActivityIndicator, Pressable, SectionList } from "react-native";
 import {
   FlatList,
   TextInput,
@@ -66,10 +66,13 @@ import { useGetAllCategoriesQuery } from "@/src/features/category/category.servi
 import { messageApi } from "./../../../../features/message/message.service";
 import { useGetInfoByIdQuery } from "@/src/features/user/user.service";
 import { useCreateMessageMutation } from "./../../../../features/message/message.service";
+import * as ImagePicker from "expo-image-picker";
+
 const DEFAULT_LIMIT = 20;
 const screenHeight = Dimensions.get("window").height;
 const screenWidth = Dimensions.get("window").width;
-
+const CLOUDINARY_UPLOAD_PRESET = "dy9yts4fa";
+const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dy9yts4fa/image/upload";
 type MessageType = {
   _id?: string;
   email?: string;
@@ -151,6 +154,8 @@ const Chat: FC = () => {
   //   console.log(useGetInfoByIdQuery(userId).currentData?.avatar_url);
   const [sendMessage] = useCreateMessageMutation();
   const [messageContent, setMessageContent] = useState("");
+  const [selectedImages, setSelectedImages] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false); // Thêm state loading
 
   const {
     data: messages,
@@ -180,32 +185,108 @@ const Chat: FC = () => {
       flatListRef.current.scrollToEnd({ animated: true }); // Cuộn xuống cuối danh sách
     }
   }, [messages]);
+
+  useEffect(() => {
+    if (selectedImages.length > 0) {
+      const sendMessageAsync = async () => {
+        await handleSendMessage(); // Send the message when image is selected
+      };
+      sendMessageAsync();
+    }
+  }, [selectedImages]); // Dependency array listens to changes in selectedImages
+  // Hàm gửi tin nhắn (với logic tự động gửi khi có hình ảnh)
   const handleSendMessage = async () => {
-    if (messageContent.trim() === "") {
+    if (selectedImages.length > 0 || messageContent.trim()) {
+      try {
+        await sendMessage({
+          walletId,
+          userId,
+          content: messageContent,
+          images: selectedImages, // Thêm mảng hình ảnh nếu có
+        }).unwrap();
+
+        // Reset sau khi gửi thành công
+        setMessageContent("");
+        setSelectedImages([]);
+        refetch(); // Refetch để cập nhật danh sách tin nhắn
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
+    } else {
       alert(t("alert.message"));
-      return;
-    } // Không gửi nếu tin nhắn rỗng
-
-    try {
-      await sendMessage({
-        walletId,
-        userId,
-        content: messageContent,
-        images: [], // Thêm mảng hình ảnh nếu có, hiện tại để trống
-      }).unwrap();
-
-      setMessageContent(""); // Xóa nội dung tin nhắn sau khi gửi thành công
-      refetch(); // Refetch để cập nhật danh sách tin nhắn
-    } catch (error) {
-      console.error("Error sending message:", error);
     }
   };
-  if (isLoading) {
+  // Hàm upload ảnh lên Cloudinary
+  const uploadImageToCloudinary = async (uri: string) => {
+    try {
+      let formData = new FormData();
+      const uriParts = uri.split(".");
+      const fileType = uriParts[uriParts.length - 1]; // Lấy loại tệp từ URI
+
+      formData.append("file", {
+        uri,
+        type: `image/${fileType}`,
+        name: `upload.${fileType}`,
+      });
+      formData.append("upload_preset", "my_preset"); // Sử dụng preset mới "my_preset"
+
+      const response = await fetch(CLOUDINARY_URL, {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+      console.log("Cloudinary response data:", data); // In ra để kiểm tra
+
+      if (data.secure_url) {
+        return data.secure_url; // Trả về URL của ảnh đã upload
+      } else {
+        throw new Error("Failed to upload image");
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      alert("Failed to upload image. Please try again.");
+    }
+  };
+
+  const handleImagePick = async () => {
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (permissionResult.granted === false) {
+      alert("Permission to access camera roll is required!");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsMultipleSelection: false, // Select only one image
+    });
+
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      const imageUri = result.assets[0].uri;
+      setLoading(true); // Show loading indicator while uploading
+
+      try {
+        const uploadedUrl = await uploadImageToCloudinary(imageUri);
+        setSelectedImages([uploadedUrl]);
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      } finally {
+        setLoading(false); // Hide loading indicator after image upload
+      }
+    }
+  };
+
+  console.log(selectedImages);
+  if (isLoading === true) {
     return <Loading />; // Show a loading indicator while fetching
   }
 
   if (error) {
     return <Text>Fetching messages: {error.message}</Text>; // Handle error state
+  }
+  if (loading) {
+    <ActivityIndicator size="large" color="#0000ff" />;
   }
 
   return (
@@ -218,7 +299,7 @@ const Chat: FC = () => {
         style={styles.messageList}
       />
       <View style={styles.inputContainer}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleImagePick}>
           <Image
             source={require("@/assets/images/gallery-icon.png")}
             style={styles.galleryIcon}
