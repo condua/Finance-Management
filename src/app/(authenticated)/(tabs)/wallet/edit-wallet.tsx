@@ -27,6 +27,7 @@ import { Image } from "react-native";
 import { SafeAreaView } from "react-native";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
+import { err } from "react-native-svg";
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
@@ -104,6 +105,7 @@ const Page = () => {
     try {
       await deleteWallet({ walletId: id }).unwrap();
     } catch (error) {
+      alert(error.data.message);
       console.log("🚀 ~ handleCreateWal ~ error:", error);
     }
   };

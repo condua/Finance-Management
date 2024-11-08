@@ -18,10 +18,13 @@ import { getCurrencySymbol } from "@/src/utils/getCurrencySymbol";
 import { AntDesign } from "@expo/vector-icons";
 import { Href } from "expo-router";
 import { Stack, useRouter } from "expo-router";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Image } from "react-native";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { formatValue } from "react-native-currency-input-fields";
+
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback } from "react";
 
 const Page = () => {
   const router = useRouter();
@@ -36,8 +39,14 @@ const Page = () => {
     disableDecimal,
     shortenAmount,
   } = useSettings().styleMoneyLabel;
-
   const getAllWallets = useGetAllWalletsQuery();
+
+  // Refetch wallets whenever the screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      getAllWallets.refetch();
+    }, [])
+  );
   console.log(getAllWallets?.currentData?.length);
   const handleSelectWallet = (_id: string) => {
     if (walletId === _id) return;
