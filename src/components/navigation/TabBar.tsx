@@ -1,56 +1,106 @@
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
-import { type BottomTabBarProps } from '@react-navigation/bottom-tabs'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { BrandColor, NeutralColor } from '@/src/constants/Colors'
-import { Pressable } from 'react-native'
-import { useMemo, useState } from 'react'
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { type BottomTabBarProps } from "@react-navigation/bottom-tabs";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { BrandColor, NeutralColor } from "@/src/constants/Colors";
+import { Pressable } from "react-native";
+import { useMemo, useState } from "react";
+import { useAppSelector } from "@/src/hooks/hooks";
+import { useGetWalletByIdQuery } from "@/src/features/wallet/wallet.service";
+import Modal from "react-native-modal";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import { useLocale } from "@/src/hooks/useLocale";
+const { t } = useLocale();
+
+export const CustomAlertModal = ({ isVisible, onClose, title, message }) => {
+  return (
+    <Modal isVisible={isVisible} onBackdropPress={onClose}>
+      <View style={styles.alertContainer}>
+        <Icon name="error-outline" size={50} color="red" />
+        <Text style={styles.alertTitle}>{title}</Text>
+        <Text style={styles.alertMessage}>{message}</Text>
+        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+          <Text style={styles.closeButtonText}>Close</Text>
+        </TouchableOpacity>
+      </View>
+    </Modal>
+  );
+};
 
 function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
-  const { bottom } = useSafeAreaInsets()
+  const { walletId } = useAppSelector((state) => state.auth);
+  const userId = useAppSelector((state) => state.auth.user._id);
+  const wallet = useGetWalletByIdQuery({ walletId });
+  const admins = wallet?.currentData?.admins;
+  const owner = wallet?.currentData?.owner;
+  const walletType = wallet?.currentData?.type;
+  const { bottom } = useSafeAreaInsets();
   const hideTabs = useMemo(() => {
-     for (let route of state.routes) {
-        const { options } = descriptors[route.key]
-        if (JSON.stringify(options.tabBarStyle) === JSON.stringify({ display: 'none' })) {
-          return true
-        }
+    for (let route of state.routes) {
+      const { options } = descriptors[route.key];
+      if (
+        JSON.stringify(options.tabBarStyle) ===
+        JSON.stringify({ display: "none" })
+      ) {
+        return true;
       }
-   }, [state])
+    }
+  }, [state]);
+
+  const [isAlertVisible, setAlertVisible] = useState(false);
+
   return (
-    <View style={[styles.tabBarContainer, { bottom: bottom }, hideTabs ? {display: 'none'} : {display: 'flex'} ]}>
+    <View
+      style={[
+        styles.tabBarContainer,
+        { bottom: bottom },
+        hideTabs ? { display: "none" } : { display: "flex" },
+      ]}
+    >
       {state.routes.map((route, index) => {
-        const { options } = descriptors[route.key]
+        const { options } = descriptors[route.key];
         const label =
           options.tabBarLabel !== undefined
             ? options.tabBarLabel
             : options.title !== undefined
             ? options.title
-            : route.name
+            : route.name;
         // remove +not-found or _sitemap from tabs
-        if (['_sitemap', '+not-found'].includes(route.name)) return null
+        if (["_sitemap", "+not-found"].includes(route.name)) return null;
 
-        const isFocused = state.index === index
+        const isFocused = state.index === index;
         const onPress = () => {
           const event = navigation.emit({
-            type: 'tabPress',
+            type: "tabPress",
             target: route.key,
             canPreventDefault: true,
-          })
-
-          if (!isFocused && !event.defaultPrevented) {
-            navigation.navigate(route.name, route.params)
+          });
+          // console.log(route.name);
+          if (route.name === "transaction") {
+            if (
+              walletType === "shared" &&
+              (owner !== userId || admins.includes(userId))
+            ) {
+              setAlertVisible(true);
+              return;
+            } else {
+              navigation.navigate(route.name, route.params);
+            }
           }
-        }
+          if (!isFocused && !event.defaultPrevented) {
+            navigation.navigate(route.name, route.params);
+          }
+        };
 
         const onLongPress = () => {
           navigation.emit({
-            type: 'tabLongPress',
+            type: "tabLongPress",
             target: route.key,
-          })
-        }
+          });
+        };
 
         return (
           <Pressable
-            accessibilityRole='button'
+            accessibilityRole="button"
             accessibilityState={isFocused ? { selected: true } : {}}
             accessibilityLabel={options.tabBarAccessibilityLabel}
             testID={options.tabBarTestID}
@@ -69,7 +119,11 @@ function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
               <Text
                 style={[
                   styles.tabBarLabel,
-                  { color: isFocused ? BrandColor.PrimaryColor[400] : BrandColor.Gray[400] },
+                  {
+                    color: isFocused
+                      ? BrandColor.PrimaryColor[400]
+                      : BrandColor.Gray[400],
+                  },
                 ]}
                 numberOfLines={1}
                 adjustsFontSizeToFit={true}
@@ -78,19 +132,25 @@ function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
               </Text>
             )}
           </Pressable>
-        )
+        );
       })}
+      <CustomAlertModal
+        isVisible={isAlertVisible}
+        onClose={() => setAlertVisible(false)}
+        title={t("alerts.notification")}
+        message={t("alerts.create")}
+      />
     </View>
-  )
+  );
 }
-export default TabBar
+export default TabBar;
 
 const styles = StyleSheet.create({
   tabBarContainer: {
-    position: 'absolute',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    position: "absolute",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     backgroundColor: NeutralColor.White[50],
     gap: 16,
     paddingVertical: 15,
@@ -100,11 +160,39 @@ const styles = StyleSheet.create({
   },
   tabBarItem: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   tabBarLabel: {
     fontSize: 13,
     lineHeight: 18,
   },
-})
+  alertContainer: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  alertTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "red",
+    marginTop: 10,
+  },
+  alertMessage: {
+    fontSize: 16,
+    textAlign: "center",
+    marginVertical: 10,
+  },
+  closeButton: {
+    backgroundColor: "red",
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginTop: 15,
+  },
+  closeButtonText: {
+    color: "white",
+    fontWeight: "bold",
+  },
+});

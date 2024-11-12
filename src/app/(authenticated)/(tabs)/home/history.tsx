@@ -386,6 +386,7 @@ const history = () => {
             <TouchableOpacity
               key={item._id}
               onPress={() =>
+                
                 router.push({
                   pathname: '/(authenticated)/(tabs)/home/[id]',
                   params: { id: item._id },

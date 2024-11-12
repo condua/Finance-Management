@@ -380,7 +380,7 @@ const styles = StyleSheet.create({
     borderTopColor: "#e5e5ea",
   },
   galleryIcon: {
-    width: 25,
+    width: 30,
     height: 25,
     marginRight: 10,
   },

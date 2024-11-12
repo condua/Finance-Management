@@ -22,7 +22,9 @@ import { useNetInfo } from "@react-native-community/netinfo";
 const InitialLayout = () => {
   const router = useRouter();
   const segment = useSegments();
-  const { isAuthenticated, walletId } = useAppSelector((state) => state.auth);
+  const { walletId } = useAppSelector((state) => state.auth);
+  const { isAuthenticated } = useAppSelector((state) => state.auth) || false;
+
   const netInfo = useNetInfo();
   // console.log('netInfo', netInfo)
   useEffect(() => {

@@ -12,6 +12,7 @@ import { useSelector } from "react-redux";
 import { useAppSelector } from "@/src/hooks/hooks";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { WebView } from "react-native-webview";
+import { BrandColor, Colors } from "@/src/constants/Colors";
 
 type Props = {
   walletId?: string;
@@ -41,6 +42,7 @@ const Promote: React.FC<Props> = ({
     user?.avatar_url ||
     "https://static-00.iconduck.com/assets.00/avatar-icgon-512x512-gu21ei4u.png";
   const name = user?.name;
+  const email = user?.email;
   return (
     <Modal
       animationType="slide"
@@ -52,8 +54,9 @@ const Promote: React.FC<Props> = ({
         <View style={styles.overlay}>
           <View style={styles.modalContainer}>
             <Image style={styles.avatar} source={{ uri: avatar }} />
-
             <Text style={styles.title}>{name}</Text>
+            <Text style={styles.email}>{email}</Text>
+
             <TouchableOpacity style={styles.buttonPromote}>
               {ownerId === memberId ? (
                 <></>
@@ -81,8 +84,9 @@ const Promote: React.FC<Props> = ({
                 <></>
               )}
             </TouchableOpacity>
+
             <TouchableOpacity style={styles.buttonDelete}>
-              {ownerId === memberId ? (
+              {userId === memberId ? (
                 <></>
               ) : ownerId === userId ? (
                 <>
@@ -93,9 +97,7 @@ const Promote: React.FC<Props> = ({
                     Xóa thành viên
                   </Text>
                 </>
-              ) : admins?.includes(userId) && admins?.includes(memberId) ? (
-                <></>
-              ) : (
+              ) : admins?.includes(userId) && !admins?.includes(memberId) ? (
                 <>
                   <View style={styles.icon}>
                     <Icon name="minus" size={20} color="red" />
@@ -104,9 +106,10 @@ const Promote: React.FC<Props> = ({
                     Xóa thành viên
                   </Text>
                 </>
+              ) : (
+                <></>
               )}
             </TouchableOpacity>
-
             <TouchableOpacity style={styles.buttonDelete}>
               {userId === memberId ? (
                 <>
@@ -150,6 +153,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 10,
+  },
+  email: {
+    fontSize: 14,
+    color: BrandColor.Gray[800],
   },
   content: {
     fontSize: 16,

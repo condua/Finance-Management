@@ -323,7 +323,9 @@
     "chat":"Group chat",
     "member":"View members",
     "invitations":"Invitations",
-    "invest":"Investment channels"
+    "invest":"Investment channels",
+    "addmembers":"Add members",
+    "add":"Add"
   },
   "investments":{
     "gold":"Gold rate",
@@ -332,5 +334,19 @@
     "foreign":"Exchange rate",
     "bank":"Bank interest",
     "stock":"Stocks"
+  },
+  "alerts":{
+    "notification":"Notification",
+    "create":"You do not have permission to create new transaction on this wallet",
+    "delete":"You do not have permission to delete this transaction.",
+    "edit":"You do not have permission to edit this transaction.",
+
+    "close":"Close"
+  },
+  "promote":{
+    "leave":"",
+    "kick":"",
+    "promote":"",
+    "demote":""
   }
 }

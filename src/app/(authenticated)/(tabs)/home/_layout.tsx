@@ -29,7 +29,9 @@ const Layout = () => {
                 router.navigate("/(authenticated)/(tabs)/home/searchMember");
               }}
             >
-              <Text style={{ color: "blue", fontSize: 20 }}>Thêm</Text>
+              <Text style={{ color: "blue", fontSize: 20 }}>
+                {t("titles.add")}
+              </Text>
             </TouchableOpacity>
           ),
         }}
@@ -37,7 +39,7 @@ const Layout = () => {
       <Stack.Screen
         name="searchMember"
         options={{
-          title: `Thêm thành viên`,
+          title: `${t("titles.addmembers")}`,
         }}
       />
       <Stack.Screen

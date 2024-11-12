@@ -324,7 +324,10 @@
     "chat":"Thảo luận nhóm",
     "member":"Xem thành viên",
     "inviations":"Lời mời vào nhóm",
-    "invest":"Một số kênh đầu tư"
+    "invest":"Một số kênh đầu tư",
+    "addmembers":"Thêm thành viên",
+    "add":"Thêm"
+
   },
   "investments":{
     "gold":"Tỷ giá vàng",
@@ -333,5 +336,12 @@
     "foreign":"Tỷ giá ngoại tệ",
     "bank":"Lãi suất ngân hàng",
     "stock":"Chứng khoán"
+  },
+  "alerts":{
+    "notification":"Thông báo",
+    "delete":"Bạn không có quyền xóa giao dịch này.",
+    "create":"Bạn không có quyền thực hiện giao dịch trên ví này.",
+    "edit":"Bạn không có quyền thực hiện chỉnh sửa giao dịch trên ví này",
+    "close":"Đóng"
   }
 }

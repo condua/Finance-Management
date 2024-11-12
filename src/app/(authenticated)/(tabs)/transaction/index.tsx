@@ -58,6 +58,7 @@ import Toast from "react-native-toast-message";
 import AlertCustom from "@/src/components/AlertCustom";
 import { Alert } from "react-native";
 import { useActionSheet } from "@expo/react-native-action-sheet";
+import { useGetWalletByIdQuery } from "@/src/features/wallet/wallet.service";
 
 type AndroidMode = "date" | "time";
 const screenWidth = Dimensions.get("window").width;
@@ -73,6 +74,7 @@ const initialTransaction: Omit<Transaction, "_id"> = {
 
 const Page = () => {
   const { walletId } = useAppSelector((state) => state.auth);
+  const userId = useAppSelector((state) => state.auth.user._id);
   const options = ["Open Camera", "Choose Image from Library"];
   const dispatch = useAppDispatch();
   const navigation = useNavigation();
@@ -104,6 +106,11 @@ const Page = () => {
     { title: t("transaction.expense") },
     { title: t("transaction.income") },
   ];
+  const wallet = useGetWalletByIdQuery({ walletId });
+  const admins = wallet?.currentData?.admins;
+  const owner = wallet?.currentData?.owner;
+  const walletType = wallet?.currentData?.type;
+
   const bottomSheetCategoryModalRef = useRef<BottomSheetModal>(null);
   const snapPointsCategory = useMemo(() => ["85%"], []);
 
@@ -175,7 +182,12 @@ const Page = () => {
   const showTimepicker = () => {
     showMode("time");
   };
-
+  // useEffect(() => {
+  //   if (owner !== userId || !admins.includes(userId)) {
+  //     Alert.alert("Thông báo", "Bạn không phải là chủ sở hữu ví này.");
+  //     router.back(); // Quay lại trang trước đó
+  //   }
+  // }, [owner, admins]);
   useEffect(() => {
     if (createdTransactionResult.isSuccess) {
       setTransaction(initialTransaction);
