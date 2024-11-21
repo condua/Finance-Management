@@ -7,7 +7,14 @@ type Props = {};
 const Stock = (props: Props) => {
   return (
     <View style={styles.container}>
-      <WebView source={{ uri: "https://prs.tvsi.com.vn/" }} />
+      <WebView
+        source={{ uri: "https://banggia.dag.vn/HOSE-IDX?lang=vi" }}
+        originWhitelist={["*"]}
+        javaScriptEnabled={true}
+        domStorageEnabled={true}
+        allowUniversalAccessFromFileURLs={true}
+        mixedContentMode="always" // Allow mixed content for insecure SSL
+      />
     </View>
   );
 };

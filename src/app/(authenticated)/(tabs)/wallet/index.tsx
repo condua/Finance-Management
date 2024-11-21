@@ -65,10 +65,12 @@ const Page = () => {
       getAllWallets.data?.filter((wallet) => wallet.type === "shared") || [],
     [getAllWallets.data]
   );
-  const totalBalance = useMemo(
-    () => getAllWallets.data?.reduce((pre, cur) => pre + cur.balance, 0),
-    [getAllWallets.data]
+  // Calculate the total balance of private wallets
+  const totalPrivateWalletBalance = useMemo(
+    () => privateWallets.reduce((sum, wallet) => sum + wallet.balance, 0),
+    [privateWallets]
   );
+
   return (
     <View style={styles.container}>
       <Stack.Screen
@@ -114,7 +116,7 @@ const Page = () => {
       />
       <Loading isLoading={getAllWallets.isFetching} text="Loading..." />
       <View style={{ marginTop: 20, gap: 20 }}>
-        <View
+        {/* <View
           style={{
             flexDirection: "row",
             alignItems: "center",
@@ -144,7 +146,7 @@ const Page = () => {
                   decimalScale: disableDecimal ? 0 : 2,
                 })}
           </ThemedText>
-        </View>
+        </View> */}
         {/* {getAllWallets.data?.map((wallet) => (
           <TouchableOpacity
             key={wallet._id}
@@ -162,6 +164,7 @@ const Page = () => {
         {/* Danh sách ví private */}
         <ThemedText color={TextColor.Primary} type={TextType.Title20Semibold}>
           {t("wallets.private")}
+          {/* {` : `} {totalPrivateWalletBalance} */}
         </ThemedText>
         {privateWallets.map((wallet) => (
           <TouchableOpacity

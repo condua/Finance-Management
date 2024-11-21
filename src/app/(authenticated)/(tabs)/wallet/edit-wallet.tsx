@@ -4,6 +4,7 @@ import Input from "@/src/components/Input";
 import Loading from "@/src/components/Loading";
 import Header from "@/src/components/navigation/Header";
 import HeaderButton from "@/src/components/navigation/HeaderButton";
+import { CustomAlertModal } from "@/src/components/navigation/TabBar";
 import { ThemedText } from "@/src/components/ThemedText";
 import { BackgroundColor, BrandColor, TextColor } from "@/src/constants/Colors";
 import {
@@ -11,6 +12,7 @@ import {
   useGetWalletByIdQuery,
   useUpdateWalletMutation,
   useDeleteWalletMutation,
+  useGetAllWalletsQuery,
 } from "@/src/features/wallet/wallet.service";
 import { useAppSelector } from "@/src/hooks/hooks";
 import { useLocale } from "@/src/hooks/useLocale";
@@ -59,7 +61,7 @@ const Page = () => {
   const [isValidFields, setIsValidFields] = useState({
     name: true,
   });
-
+  const [isAlertVisible, setAlertVisible] = useState(false);
   const fetchedWallet = useGetWalletByIdQuery({
     walletId: id ?? skipToken,
   });
@@ -72,7 +74,21 @@ const Page = () => {
 
   const [updateWallet, updateWalletResult] = useUpdateWalletMutation();
   const [deleteWallet, deleteWalletResult] = useDeleteWalletMutation();
+  const userId = useAppSelector((state) => state.auth.user._id);
+  const walletDetail = useGetWalletByIdQuery({ walletId: id });
+  const admins = walletDetail?.currentData?.admins || [];
+  const owner = walletDetail?.currentData?.owner || null;
+  console.log(walletDetail);
+  const getAllWallets = useGetAllWalletsQuery();
 
+  // Phân loại wallets theo type
+  const privateWallets =
+    getAllWallets.data?.filter((wallet) => wallet.type === "private") || [];
+  const sharedWallets =
+    getAllWallets.data?.filter((wallet) => wallet.type === "shared") || [];
+  console.log(privateWallets.length);
+
+  const privateLength = privateWallets.length;
   const errorForm: FormError = useMemo(() => {
     const errorResult = updateWalletResult.error;
     if (isEntityError(errorResult)) {
@@ -87,7 +103,8 @@ const Page = () => {
       router.back();
     }
   }, [updateWalletResult, deleteWalletResult]);
-
+  console.log(userId);
+  console.log(owner);
   const handleCreateWallet = async () => {
     try {
       await updateWallet({
@@ -102,6 +119,20 @@ const Page = () => {
     }
   };
   const handleDeleteWallet = async () => {
+    if (wallet.type === "private" && privateLength <= 1) {
+      alert(
+        "Bạn không được phép xóa ví này. Bạn phải có ít nhất 1 ví cá nhân."
+      );
+      return;
+    }
+    if (
+      wallet.type === "shared" &&
+      (userId !== owner || admins.includes[userId] === false)
+    ) {
+      setAlertVisible(true);
+      return;
+    }
+
     try {
       await deleteWallet({ walletId: id }).unwrap();
     } catch (error) {
@@ -238,6 +269,12 @@ const Page = () => {
           style={{ width: "48%" }}
         />
       </BottomContainer>
+      <CustomAlertModal
+        isVisible={isAlertVisible}
+        onClose={() => setAlertVisible(false)}
+        title={t("alerts.notification")}
+        message={t("alerts.general")}
+      />
     </View>
   );
 };

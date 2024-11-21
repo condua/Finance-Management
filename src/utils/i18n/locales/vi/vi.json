@@ -318,7 +318,14 @@
     "alert": "Xin lỗi! Tìm kiếm của bạn không phù hợp với bất kỳ kết quả nào.",
     "pending": "Đang chờ",
     "search":"Nhập email hoặc tên để tìm kiếm người dùng",
-    "searchPlaceHolder":"Tìm kiếm bằng email hoặc tên người dùng"
+    "searchPlaceHolder":"Tìm kiếm bằng email hoặc tên người dùng",
+    "you":"Bạn",
+    "leave": "Rời khỏi nhóm",
+    "remove": "Xóa thành viên này",
+    "promote": "Thăng cấp làm quản trị viên",
+    "promoteowner": "Thăng cấp thành chủ ví",
+    "demote": "Giáng cấp thành viên này"
+
   },
   "titles":{
     "chat":"Thảo luận nhóm",
@@ -342,6 +349,7 @@
     "delete":"Bạn không có quyền xóa giao dịch này.",
     "create":"Bạn không có quyền thực hiện giao dịch trên ví này.",
     "edit":"Bạn không có quyền thực hiện chỉnh sửa giao dịch trên ví này",
-    "close":"Đóng"
+    "close":"Đóng",
+    "general":"Bạn không có quyền thực hiện điều này"
   }
 }

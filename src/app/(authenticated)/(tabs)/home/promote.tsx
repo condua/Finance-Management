@@ -13,6 +13,12 @@ import { useAppSelector } from "@/src/hooks/hooks";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { WebView } from "react-native-webview";
 import { BrandColor, Colors } from "@/src/constants/Colors";
+import {
+  useDemoteFromAdminMutation,
+  usePromoteToAdminMutation,
+  usePromoteToOwnerMutation,
+} from "@/src/features/wallet/wallet.service";
+import { useLocale } from "@/src/hooks/useLocale";
 
 type Props = {
   walletId?: string;
@@ -23,7 +29,6 @@ type Props = {
   admins?: [];
   onClose: () => void;
 };
-
 const Promote: React.FC<Props> = ({
   memberId,
   ownerId,
@@ -33,6 +38,7 @@ const Promote: React.FC<Props> = ({
   user,
 }) => {
   const auth = useAppSelector((state) => state.auth);
+  const { t } = useLocale();
   const userId = auth.user._id;
   console.log(userId);
   console.log(ownerId);
@@ -43,6 +49,55 @@ const Promote: React.FC<Props> = ({
     "https://static-00.iconduck.com/assets.00/avatar-icgon-512x512-gu21ei4u.png";
   const name = user?.name;
   const email = user?.email;
+  const [promoteToOwner] = usePromoteToOwnerMutation();
+  const [promoteToAdmin, { isLoading, isError, isSuccess }] =
+    usePromoteToAdminMutation();
+  const [demoteMember] = useDemoteFromAdminMutation();
+
+  const handlePromoteToLeader = async () => {
+    try {
+      await promoteToOwner({ walletId, memberId, ownerId }).unwrap();
+      alert("Member promoted to leader successfully!");
+    } catch (error) {
+      console.error("Failed to promote member:", error);
+    }
+  };
+
+  const handlePromoteMember = async () => {
+    try {
+      await promoteToAdmin({ walletId, memberId, ownerId }).unwrap();
+      alert("Member promoted to admin successfully!");
+    } catch (error) {
+      console.error("Failed to promote member:", error);
+    }
+  };
+
+  const handleDemoteMember = async () => {
+    try {
+      await demoteMember({ walletId, memberId, ownerId }).unwrap();
+      alert("Member was demoted from admins successfully!");
+    } catch (error) {
+      console.error("Failed to demote member:", error);
+    }
+  };
+  const handleDeleteMember = async () => {
+    try {
+      // await deleteMember({ walletId, memberId, ownerId }).unwrap();
+      alert("Member was deleted successfully!");
+    } catch (error) {}
+  };
+  const handleLeaveGroup = async () => {
+    if (ownerId === memberId) {
+      alert("Bạn phải chuyển quyền trưởng nhóm trước khi rời khỏi nhóm");
+      return;
+    }
+    try {
+      // await leaveGroup({ walletId, ownerId }).unwrap();
+    } catch (error) {
+      console.error("Failed to leave group:", error);
+    }
+  };
+
   return (
     <Modal
       animationType="slide"
@@ -56,74 +111,97 @@ const Promote: React.FC<Props> = ({
             <Image style={styles.avatar} source={{ uri: avatar }} />
             <Text style={styles.title}>{name}</Text>
             <Text style={styles.email}>{email}</Text>
+            {ownerId === memberId ? (
+              <></>
+            ) : ownerId === userId ? (
+              <TouchableOpacity
+                style={styles.buttonPromote}
+                onPress={handlePromoteToLeader}
+              >
+                <View style={styles.icon}>
+                  <Icon name="arrow-up" size={18} color="#000" />
+                </View>
+                <Text style={{ fontSize: 16 }}>
+                  {t("members.promoteowner")}
+                </Text>
+              </TouchableOpacity>
+            ) : (
+              <></>
+            )}
+            {ownerId === memberId ? (
+              <></>
+            ) : ownerId === userId ? (
+              admins.includes(memberId) ? (
+                <TouchableOpacity
+                  style={styles.buttonPromote}
+                  onPress={handleDemoteMember}
+                >
+                  <View style={styles.icon}>
+                    <Icon name="star" size={20} color="#000" />
+                  </View>
+                  <Text style={{ fontSize: 16 }}>{t("members.demote")}</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  style={styles.buttonPromote}
+                  onPress={handlePromoteMember}
+                >
+                  <View style={styles.icon}>
+                    <Icon name="star" size={20} color="#000" />
+                  </View>
+                  <Text style={{ fontSize: 16 }}>{t("members.promote")}</Text>
+                </TouchableOpacity>
+              )
+            ) : (
+              <></>
+            )}
 
-            <TouchableOpacity style={styles.buttonPromote}>
-              {ownerId === memberId ? (
-                <></>
-              ) : ownerId === userId || admins?.includes(userId) ? (
-                admins.includes(memberId) ? (
-                  <>
-                    <View style={styles.icon}>
-                      <Icon name="star" size={20} color="#000" />
-                    </View>
-                    <Text style={{ fontSize: 16 }}>
-                      Gỡ vai trò quản trị viên
-                    </Text>
-                  </>
-                ) : (
-                  <>
-                    <View style={styles.icon}>
-                      <Icon name="star" size={20} color="#000" />
-                    </View>
-                    <Text style={{ fontSize: 16 }}>
-                      Chỉ định làm quản trị viên
-                    </Text>
-                  </>
-                )
-              ) : (
-                <></>
-              )}
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.buttonDelete}>
-              {userId === memberId ? (
-                <></>
-              ) : ownerId === userId ? (
-                <>
-                  <View style={styles.icon}>
-                    <Icon name="minus" size={20} color="red" />
-                  </View>
-                  <Text style={{ fontSize: 16, color: "red" }}>
-                    Xóa thành viên
-                  </Text>
-                </>
-              ) : admins?.includes(userId) && !admins?.includes(memberId) ? (
-                <>
-                  <View style={styles.icon}>
-                    <Icon name="minus" size={20} color="red" />
-                  </View>
-                  <Text style={{ fontSize: 16, color: "red" }}>
-                    Xóa thành viên
-                  </Text>
-                </>
-              ) : (
-                <></>
-              )}
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.buttonDelete}>
-              {userId === memberId ? (
-                <>
-                  <View style={styles.icon}>
-                    <Icon name="minus" size={20} color="red" />
-                  </View>
-                  <Text style={{ fontSize: 16, color: "red" }}>
-                    Rời khỏi nhóm
-                  </Text>
-                </>
-              ) : (
-                <></>
-              )}
-            </TouchableOpacity>
+            {userId === memberId ? ( // Người dùng không thể tự xóa bản thân
+              <></>
+            ) : ownerId === userId ? ( // Owner có thể xóa bất kỳ ai, kể cả admin
+              <TouchableOpacity
+                style={styles.buttonDelete}
+                onPress={handleDeleteMember}
+              >
+                <View style={styles.icon}>
+                  <Icon name="minus" size={20} color="red" />
+                </View>
+                <Text style={{ fontSize: 16, color: "red" }}>
+                  {t("members.remove")}
+                </Text>
+              </TouchableOpacity>
+            ) : ownerId !== memberId &&
+              admins?.includes(userId) &&
+              !admins?.includes(memberId) ? ( // Admin chỉ có thể xóa member thường
+              <TouchableOpacity
+                style={styles.buttonDelete}
+                onPress={handleDeleteMember}
+              >
+                <View style={styles.icon}>
+                  <Icon name="minus" size={20} color="red" />
+                </View>
+                <Text style={{ fontSize: 16, color: "red" }}>
+                  {t("members.remove")}
+                </Text>
+              </TouchableOpacity>
+            ) : (
+              <></> // Member không thể xóa bất kỳ ai
+            )}
+            {userId === memberId ? (
+              <TouchableOpacity
+                style={styles.buttonDelete}
+                onPress={handleLeaveGroup}
+              >
+                <View style={styles.icon}>
+                  <Icon name="minus" size={20} color="red" />
+                </View>
+                <Text style={{ fontSize: 16, color: "red" }}>
+                  {t("members.leave")}
+                </Text>
+              </TouchableOpacity>
+            ) : (
+              <></>
+            )}
           </View>
         </View>
         {/* <WebView source={{ uri: "https://blog.logrocket.com/" }} />; */}

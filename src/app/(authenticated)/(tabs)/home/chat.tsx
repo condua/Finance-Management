@@ -32,6 +32,8 @@ import {
   Animated,
   Keyboard,
 } from "react-native";
+// import Video, { VideoRef } from "react-native-video";
+// import { Audio, Video } from "expo-av";
 
 import {
   format,
@@ -67,6 +69,7 @@ import { messageApi } from "./../../../../features/message/message.service";
 import { useGetInfoByIdQuery } from "@/src/features/user/user.service";
 import { useCreateMessageMutation } from "./../../../../features/message/message.service";
 import * as ImagePicker from "expo-image-picker";
+// import { useVideoPlayer, VideoView } from "expo-video";
 
 const DEFAULT_LIMIT = 20;
 const screenHeight = Dimensions.get("window").height;
@@ -100,13 +103,25 @@ const UserProfileComponent = ({ userId }) => {
     </View>
   );
 };
-const ChatBubble: FC<ChatBubbleProps> = ({ message }) => {
+
+const ChatBubble: FC<{
+  message: MessageType;
+}> = ({ message }) => {
   const auth = useAppSelector((state) => state.auth);
   const userId = auth.user._id;
   const isCurrentUser = message.userId === userId;
+  const videoSource = message?.video;
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const handleImagePress = (uri: string) => {
+    setSelectedImage(uri);
+    setIsModalVisible(true);
+  };
 
-  //   console.log(auth.user.avatar_url);
-  //   console.log(<UserProfileComponent userId={isCurrentUser} />);
+  const closeModal = () => {
+    setSelectedImage(null);
+    setIsModalVisible(false);
+  };
   return (
     <View
       style={{
@@ -129,10 +144,12 @@ const ChatBubble: FC<ChatBubbleProps> = ({ message }) => {
       >
         <Text style={styles.userText}>{message.name}</Text>
         {message.images && message.images.length > 0 ? (
-          <Image
-            source={{ uri: message.images[0] }}
-            style={styles.bubbleImage}
-          />
+          <TouchableOpacity onPress={() => handleImagePress(message.images[0])}>
+            <Image
+              source={{ uri: message.images[0] }}
+              style={styles.bubbleImage}
+            />
+          </TouchableOpacity>
         ) : (
           <Text style={styles.bubbleText}>{message.content}</Text>
         )}
@@ -142,6 +159,18 @@ const ChatBubble: FC<ChatBubbleProps> = ({ message }) => {
         <UserProfileComponent userId={message.userId} />
         // <Image style={styles.avatar} source={{ uri: message.avatar }} />
       )}
+      <Modal
+        isVisible={isModalVisible}
+        onBackdropPress={closeModal}
+        onBackButtonPress={closeModal}
+        style={styles.modal}
+      >
+        <View style={styles.modalContent}>
+          {selectedImage && (
+            <Image source={{ uri: selectedImage }} style={styles.fullImage} />
+          )}
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -154,8 +183,12 @@ const Chat: FC = () => {
   //   console.log(useGetInfoByIdQuery(userId).currentData?.avatar_url);
   const [sendMessage] = useCreateMessageMutation();
   const [messageContent, setMessageContent] = useState("");
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(false); // Thêm state loading
+  const [video, setVideo] = useState("");
+  const [selectedMedia, setSelectedMedia] = useState<string[]>([]);
 
   const {
     data: messages,
@@ -202,7 +235,8 @@ const Chat: FC = () => {
           walletId,
           userId,
           content: messageContent,
-          images: selectedImages, // Thêm mảng hình ảnh nếu có
+          images: selectedImages,
+          video: selectedImages.find((url) => url.endsWith(".mp4")) || "",
         }).unwrap();
 
         // Reset sau khi gửi thành công
@@ -211,11 +245,13 @@ const Chat: FC = () => {
         refetch(); // Refetch để cập nhật danh sách tin nhắn
       } catch (error) {
         console.error("Error sending message:", error);
+        alert("Failed to send message. Please try again.");
       }
     } else {
       alert(t("alert.message"));
     }
   };
+
   // Hàm upload ảnh lên Cloudinary
   const uploadImageToCloudinary = async (uri: string) => {
     try {
@@ -276,7 +312,6 @@ const Chat: FC = () => {
       }
     }
   };
-
   console.log(selectedImages);
   if (isLoading === true) {
     return <Loading />; // Show a loading indicator while fetching
@@ -294,7 +329,9 @@ const Chat: FC = () => {
       <FlatList
         ref={flatListRef} // Attach the ref to FlatList
         data={messages}
-        renderItem={({ item }) => <ChatBubble message={item} />}
+        renderItem={({ item }) => (
+          <ChatBubble message={item} onImagePress={selectedImages[0]} />
+        )}
         keyExtractor={(item) => item._id?.toString() || ""}
         style={styles.messageList}
       />
@@ -368,6 +405,12 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 10,
   },
+  bubbleVideo: {
+    width: 200,
+    height: 200,
+    borderRadius: 10,
+    margin: 5,
+  },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -397,6 +440,20 @@ const styles = StyleSheet.create({
     width: 25,
     height: 25,
     marginLeft: 10,
+  },
+  modal: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    backgroundColor: "#000",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  fullImage: {
+    width: screenWidth,
+    height: screenHeight * 0.7,
+    resizeMode: "contain",
   },
 });
 

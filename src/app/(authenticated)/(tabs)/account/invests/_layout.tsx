@@ -37,6 +37,10 @@ const Layout = () => {
         name="bankInterest" // tên phải khớp với đường dẫn
         options={{ title: t("investments.bank") }}
       />
+      <Stack.Screen
+        name="stock" // tên phải khớp với đường dẫn
+        options={{ title: t("investments.stock") }}
+      />
     </Stack>
   );
 };

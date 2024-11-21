@@ -14,18 +14,20 @@ import {
     userId: string;   // ID của người dùng gửi message
     content: string;  // Nội dung của message
     images?: string[]; // Mảng chứa các URL hoặc dữ liệu hình ảnh, có thể không bắt buộc
+    video?: string;
   }
   
   export const messageApi = appApi.injectEndpoints({
     endpoints: (builder) => ({
       createMessage: builder.mutation<MessageResponse, CreateMessageRequest>({
-        query: ({ walletId, userId, content, images }) => ({
+        query: ({ walletId, userId, content, images,video }) => ({
           url: `${config.api.endpoints.wallets}/${walletId}/message`,
           method: 'POST',
           body: {
             userId,
             content,
             images,
+            video,
           },
         }),
         invalidatesTags: [{ type: 'Message', id: 'LIST' }],

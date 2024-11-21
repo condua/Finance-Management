@@ -89,6 +89,7 @@ type MessageType = {
 const UserProfileComponent = ({ userId, owner, admins }) => {
   const user = useGetInfoByIdQuery(userId);
   // console.log(admins);
+  const meId = useAppSelector((state) => state.auth.user._id);
   const { t } = useLocale();
   const avatar =
     user.currentData?.avatar_url ||
@@ -100,13 +101,18 @@ const UserProfileComponent = ({ userId, owner, admins }) => {
 
   const openModal = () => setModalVisible(true);
   const closeModal = () => setModalVisible(false);
-
+  const myself = () => {
+    if (userId === meId) {
+      return ` (${t("members.you")})`;
+    }
+    return "";
+  };
   return (
     <TouchableOpacity style={styles.userContainer} onPress={openModal}>
       {user && <Image style={styles.avatar} source={{ uri: avatar }} />}
       <View>
         <ThemedText color={TextColor.Primary}>
-          {user.currentData?.name || "Unknown User"}
+          {user.currentData?.name || "Unknown User"} {myself()}
         </ThemedText>
 
         {owner === userId && (
@@ -164,6 +170,7 @@ const members = () => {
   const owner = data?.owner || null;
   const admins = data?.admins || [];
   console.log(data);
+
   const renderItem = ({ item: memberId }) => (
     <UserProfileComponent userId={memberId} owner={owner} admins={admins} />
   );

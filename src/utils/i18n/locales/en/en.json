@@ -317,7 +317,13 @@
     "alert":"Sorry! Your search does not match any results",
     "pending":"Pending",
     "search":"Type email or fullname to search for users",
-    "searchPlaceHolder":"Search by email or name"
+    "searchPlaceHolder":"Search by email or name",
+    "you":"You",
+    "leave":"Leave group",
+    "remove":"Remove this member",
+    "promote":"Promote to admin",
+    "promoteowner":"Promote to owner",
+    "demote":"Demote this member"
   },
   "titles":{
     "chat":"Group chat",
@@ -340,13 +346,8 @@
     "create":"You do not have permission to create new transaction on this wallet",
     "delete":"You do not have permission to delete this transaction.",
     "edit":"You do not have permission to edit this transaction.",
-
+    "general":"You do not have permission to do this",
     "close":"Close"
-  },
-  "promote":{
-    "leave":"",
-    "kick":"",
-    "promote":"",
-    "demote":""
   }
+
 }

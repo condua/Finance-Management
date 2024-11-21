@@ -66,21 +66,34 @@ const Home = () => {
   const { data: getUser, refetch: refetchProfile } = useGetInfoByIdQuery(
     user._id
   );
-  const invitations = getUser?.invitations || [];
+  const [invitations, setInvitations] = useState([]);
 
   console.log(getUser?.invitations.length);
   useFocusEffect(
     useCallback(() => {
       if (user) {
-        refetchProfile(); // Refetch profile data when coming back to this screen
+        refetchProfile().then((response) => {
+          const newInvitations = response.data?.invitations || [];
+          // Chỉ cập nhật nếu dữ liệu mới thay đổi
+          if (JSON.stringify(newInvitations) !== JSON.stringify(invitations)) {
+            setInvitations(newInvitations);
+          }
+        });
       }
     }, [user]) // Dependency on user to make sure it refetches if the user data changes
   );
   useEffect(() => {
     if (user) {
-      refetchProfile(); // Refetch profile data when 'user' changes
+      refetchProfile().then((response) => {
+        const newInvitations = response.data?.invitations || [];
+        // Chỉ cập nhật nếu dữ liệu mới thay đổi
+        if (JSON.stringify(newInvitations) !== JSON.stringify(invitations)) {
+          setInvitations(newInvitations);
+        }
+      });
     }
-  }, [user]); // Adding 'user' as a dependency to reload on change
+  }, [user, refetchProfile]);
+  // Adding 'user' as a dependency to reload on change
   const {
     data: transactions,
     isLoading: isLoadingTransactions,

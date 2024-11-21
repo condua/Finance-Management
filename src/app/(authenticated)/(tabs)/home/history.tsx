@@ -38,6 +38,7 @@ import {
   BottomSheetView,
 } from '@gorhom/bottom-sheet'
 import { useGetAllCategoriesQuery } from '@/src/features/category/category.service'
+import { CustomAlertModal } from '@/src/components/navigation/TabBar'
 const DEFAULT_LIMIT = 20
 const screenHeight = Dimensions.get('window').height
 const screenWidth = Dimensions.get('window').width

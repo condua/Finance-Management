@@ -9,9 +9,10 @@ import { useGetWalletByIdQuery } from "@/src/features/wallet/wallet.service";
 import Modal from "react-native-modal";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useLocale } from "@/src/hooks/useLocale";
-const { t } = useLocale();
 
 export const CustomAlertModal = ({ isVisible, onClose, title, message }) => {
+  const { t } = useLocale();
+
   return (
     <Modal isVisible={isVisible} onBackdropPress={onClose}>
       <View style={styles.alertContainer}>
@@ -19,7 +20,7 @@ export const CustomAlertModal = ({ isVisible, onClose, title, message }) => {
         <Text style={styles.alertTitle}>{title}</Text>
         <Text style={styles.alertMessage}>{message}</Text>
         <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-          <Text style={styles.closeButtonText}>Close</Text>
+          <Text style={styles.closeButtonText}>{t("alerts.close")}</Text>
         </TouchableOpacity>
       </View>
     </Modal>
@@ -27,6 +28,7 @@ export const CustomAlertModal = ({ isVisible, onClose, title, message }) => {
 };
 
 function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
+  const { t } = useLocale();
   const { walletId } = useAppSelector((state) => state.auth);
   const userId = useAppSelector((state) => state.auth.user._id);
   const wallet = useGetWalletByIdQuery({ walletId });

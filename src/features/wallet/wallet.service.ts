@@ -25,6 +25,12 @@ interface RespondToInvitationRequest {
   walletId: string;
   response: 'accept' | 'decline';
 }
+
+interface PromoteMember {
+  ownerId?: string;
+  walletId: string;
+  memberId: string;
+}
 export const walletApi = appApi.injectEndpoints({
   endpoints: (builder) => ({
     createFirstWallet: builder.mutation<
@@ -137,6 +143,53 @@ inviteMemberWallet: builder.mutation<Response<{ message: string }>, InviteMember
     { type: 'User', id: body?.userId }, // Làm mới dữ liệu của User sau khi chấp nhận/từ chối
   ],
 }),
+
+
+
+
+
+promoteToOwner: builder.mutation<Response<{ message: string }>, PromoteMember>({
+  query: (body) => ({
+    url: `${config.api.endpoints.wallets}/${body.walletId}/promote/owner/${body.memberId}`,
+    method: 'POST',
+    headers: {
+      ownerId: body.ownerId
+    },
+  }),
+  invalidatesTags: [{ type: 'Wallet', id: 'LIST' }],
+}),
+
+promoteToAdmin: builder.mutation<Response<{ message: string }>, PromoteMember>({
+  query: (body) => ({
+    url: `${config.api.endpoints.wallets}/${body.walletId}/promote/${body.memberId}`,
+    method: 'POST',
+    headers: {
+      ownerId: body.ownerId
+    },
+  }),
+  invalidatesTags: [{ type: 'Wallet', id: 'LIST' }],
+}),
+
+demoteFromAdmin: builder.mutation<Response<{ message: string }>, PromoteMember>({
+  query: (body) => ({
+    url: `${config.api.endpoints.wallets}/${body.walletId}/demote/${body.memberId}`,
+    method: 'POST',
+    body: {
+      ownerId: body.ownerId, // Optional, depending on API requirements
+    },
+  }),
+  invalidatesTags: [{ type: 'Wallet', id: 'LIST' }],
+}),
+
+leaveWallet: builder.mutation<Response<{ message: string }>, { walletId: string }>({
+  query: (body) => ({
+    url: `${config.api.endpoints.wallets}/${body.walletId}/leave`,
+    method: 'POST',
+  }),
+  invalidatesTags: [{ type: 'Wallet', id: 'LIST' }],
+}),
+  
+
   }),
   overrideExisting: true,
 })
@@ -150,4 +203,8 @@ export const {
   useGetAllWalletsQuery,
   useInviteMemberWalletMutation,
   useRespondToInvitationMutation,
+  usePromoteToOwnerMutation,
+  usePromoteToAdminMutation,
+  useDemoteFromAdminMutation,
+  useLeaveWalletMutation,
 } = walletApi
