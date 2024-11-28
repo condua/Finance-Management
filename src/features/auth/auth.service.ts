@@ -50,7 +50,44 @@ export const authApi = createApi({
       }),
       transformResponse: (response: { metadata: UserProfile }) => response.metadata,
     }),
+    sendEmail: builder.mutation<Response<{ message: string }>, { email: string }>({
+      query: (body) => ({
+        url: '/auth/send-email',
+        method: 'POST',
+        body,
+      }),
+    }),
+    verifyOtp: builder.mutation<Response<{ message: string }>, { email: string; otp: string }>({
+      query: (body) => ({
+        url: '/auth/verify-otp',
+        method: 'POST',
+        body,
+      }),
+    }),
+    changePasswordByOtp: builder.mutation<Response<{ message: string }>, { email: string; otp: string; newPassword: string }>({
+      query: (body) => ({
+        url: '/auth/change-password-by-otp',
+        method: 'POST',
+        body,
+      }),
+    }),
+    resendOtp: builder.mutation<Response<{ message: string }>, { email: string }>({
+      query: (body) => ({
+        url: '/auth/resend-otp',
+        method: 'POST',
+        body,
+      }),
+    }),
   }),
 })
 
-export const { useLoginMutation, useSignupMutation, useLogoutMutation, useChangePasswordMutation } = authApi
+export const 
+{ useLoginMutation, 
+  useSignupMutation, 
+  useLogoutMutation, 
+  useChangePasswordMutation,   
+  useSendEmailMutation,
+  useVerifyOtpMutation,
+  useChangePasswordByOtpMutation,
+  useResendOtpMutation, 
+} = authApi
