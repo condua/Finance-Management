@@ -73,6 +73,45 @@ const InitialLayout = () => {
         }}
       />
       <Stack.Screen
+        name="changepassword"
+        options={{
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => router.back()}>
+              <ChevronLeft width={24} height={24} />
+            </TouchableOpacity>
+          ),
+          title: "",
+          headerShadowVisible: false,
+          presentation: "modal",
+        }}
+      />
+      <Stack.Screen
+        name="sendemail"
+        options={{
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => router.back()}>
+              <ChevronLeft width={24} height={24} />
+            </TouchableOpacity>
+          ),
+          title: "",
+          headerShadowVisible: false,
+          presentation: "modal",
+        }}
+      />
+      <Stack.Screen
+        name="verifyotp"
+        options={{
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => router.back()}>
+              <ChevronLeft width={24} height={24} />
+            </TouchableOpacity>
+          ),
+          title: "",
+          headerShadowVisible: false,
+          presentation: "modal",
+        }}
+      />
+      <Stack.Screen
         name="reset-password"
         options={{
           headerLeft: () => (
