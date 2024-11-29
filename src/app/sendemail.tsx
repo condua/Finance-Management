@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import forgotImage from "../assets/images/forgot-password.png";
+import forgot_image from "../assets/images/forgot-password.png";
 import { useRouter } from "expo-router";
 import { EmailRegExp } from "../utils/RegExp";
 import { useSendEmailMutation } from "../features/auth/auth.service";
@@ -69,7 +69,7 @@ const SendEmail = () => {
           <Text style={styles.buttonText}>Recover Password</Text>
         )}
       </TouchableOpacity>
-      <Image style={styles.image} source={forgotImage} resizeMode="contain" />
+      <Image style={styles.image} source={forgot_image} resizeMode="contain" />
     </View>
   );
 };

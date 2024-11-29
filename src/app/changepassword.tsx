@@ -12,8 +12,8 @@ import React, { useState } from "react";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import forgotImage from "../assets/images/forgot-password.png";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import closeEye from "../assets/images/close-eye.png";
-import openEye from "../assets/images/open-eye.png";
+import close_eye from "../assets/images/close-eye.png";
+import open_eye from "../assets/images/open-eye.png";
 import { useChangePasswordByOtpMutation } from "../features/auth/auth.service";
 import {
   ALERT_TYPE,
@@ -30,14 +30,14 @@ const changepassword = (props: Props) => {
   const router = useRouter();
   const [newPassword, setNewPassword] = React.useState("");
   const [secureText, setSecureText] = useState(true);
-  const [eye, setEye] = useState(closeEye);
+  const [eye, setEye] = useState(close_eye);
   const [isLoading, setIsLoading] = useState(false);
 
   const [changePasswordByOtp] = useChangePasswordByOtpMutation();
 
   const handleSecureText = () => {
     setSecureText(!secureText);
-    setEye(secureText ? openEye : closeEye);
+    setEye(secureText ? open_eye : close_eye);
   };
 
   // Hàm kiểm tra mật khẩu
