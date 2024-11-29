@@ -22,7 +22,6 @@ const SendEmail = () => {
   const [email, setEmail] = useState("");
   const [sendEmail, { isLoading }] = useSendEmailMutation();
   const [error, setError] = useState<string | null>(null);
-
   const handleSendEmail = async () => {
     if (!EmailRegExp.test(email)) {
       setError("Please enter a valid email address.");

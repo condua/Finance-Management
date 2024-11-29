@@ -28,7 +28,6 @@ const screenWidth = Dimensions.get("window").width;
 const changepassword = (props: Props) => {
   const { email, otp } = useLocalSearchParams();
   const router = useRouter();
-
   const [newPassword, setNewPassword] = React.useState("");
   const [secureText, setSecureText] = useState(true);
   const [eye, setEye] = useState(closeEye);
