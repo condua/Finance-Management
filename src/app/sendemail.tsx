@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import forgotImage from "../assets/images/forgotPassword.png";
+import forgotImage from "../assets/images/forgot-password.png";
 import { useRouter } from "expo-router";
 import { EmailRegExp } from "../utils/RegExp";
 import { useSendEmailMutation } from "../features/auth/auth.service";

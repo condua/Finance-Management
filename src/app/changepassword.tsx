@@ -10,10 +10,10 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import forgotImage from "../assets/images/forgotPassword.png";
+import forgotImage from "../assets/images/forgot-password.png";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import closeEye from "../assets/images/closeEye.png";
-import openEye from "../assets/images/openEye.png";
+import closeEye from "../assets/images/close-eye.png";
+import openEye from "../assets/images/open-eye.png";
 import { useChangePasswordByOtpMutation } from "../features/auth/auth.service";
 import {
   ALERT_TYPE,
