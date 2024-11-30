@@ -348,6 +348,24 @@
     "edit":"You do not have permission to edit this transaction.",
     "general":"You do not have permission to do this",
     "close":"Close"
+  },
+  "passwordOtp":{
+    "password":"Password",
+    "otp":"OTP",
+    "forgotpassword":"Forgot password ?",
+    "sendotp":"Send OTP",
+    "buttonverify":"Verify",
+    "resendotp":"Resend OTP",
+    "passwordrecovery": "Password Recovery",
+    "passwordrecoverytitle": "Enter your email to recover your password",
+    "buttonrecovery":"Recover Password",
+    "email": "Your email",
+    "checkyourphone":"Check your phone",
+    "phonetitle":"We've sent the code to your phone",
+    "codeexpire":"Code expire in: ",
+    "enterpassword":"Enter your new password to recover your password",
+    "newpassword":"Your new password",
+    "recoverpassword":"Recover password"
   }
 
 }

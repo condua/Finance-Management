@@ -5,11 +5,11 @@ import {
   Dimensions,
   TextInput,
   Image,
+  Animated,
   ActivityIndicator,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import forgot_image from "../assets/images/forgot-password.png";
 import { useRouter } from "expo-router";
 import { EmailRegExp } from "../utils/RegExp";
 import { useSendEmailMutation } from "../features/auth/auth.service";
@@ -22,6 +22,32 @@ const SendEmail = () => {
   const [email, setEmail] = useState("");
   const [sendEmail, { isLoading }] = useSendEmailMutation();
   const [error, setError] = useState<string | null>(null);
+  const [isFocused, setIsFocused] = useState(false);
+  const placeholderAnim = useRef(new Animated.Value(0)).current; // Giá trị để điều khiển animation
+  const [exampleEmail, setExampleEmail] = useState("Example@gmail.com");
+  // Kích hoạt animation khi focus/blur
+  const handleFocus = () => {
+    setIsFocused(true);
+    setExampleEmail("Your email");
+    Animated.timing(placeholderAnim, {
+      toValue: 1, // Di chuyển lên
+      duration: 200,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const handleBlur = () => {
+    if (email === "") {
+      setIsFocused(false);
+      setExampleEmail("Example@gmail.com");
+      Animated.timing(placeholderAnim, {
+        toValue: 0, // Trở lại vị trí ban đầu
+        duration: 200,
+        useNativeDriver: false,
+      }).start();
+    }
+  };
+
   const handleSendEmail = async () => {
     if (!EmailRegExp.test(email)) {
       setError("Please enter a valid email address.");
@@ -42,6 +68,26 @@ const SendEmail = () => {
     }
   };
 
+  // Tính toán vị trí của placeholder
+  const placeholderTranslateY = placeholderAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [12, -10], // Điều chỉnh vị trí placeholder (xuống/lên)
+  });
+
+  const placeholderFontSize = placeholderAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [16, 14], // Điều chỉnh kích thước font
+  });
+
+  const placeholderColor = placeholderAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["#aaa", "black"], // Điều chỉnh kích thước font
+  });
+
+  const placeholderPadding = placeholderAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 5], // Điều chỉnh kích thước font
+  });
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Password Recovery</Text>
@@ -49,12 +95,29 @@ const SendEmail = () => {
         Enter your email to recover your password
       </Text>
       <View style={styles.inputContainer}>
+        {/* Placeholder */}
+        <Animated.Text
+          style={[
+            styles.placeholder,
+            {
+              transform: [{ translateY: placeholderTranslateY }],
+              fontSize: placeholderFontSize,
+              color: placeholderColor,
+              paddingHorizontal: placeholderPadding,
+            },
+          ]}
+        >
+          {exampleEmail}
+        </Animated.Text>
+        {/* TextInput */}
+
         <TextInput
           style={styles.input}
-          placeholder="email@merchport.hk"
-          keyboardType="email-address"
           value={email}
           onChangeText={(text) => setEmail(text)}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          keyboardType="email-address"
         />
       </View>
       {error && <Text style={styles.errorText}>{error}</Text>}
@@ -69,7 +132,11 @@ const SendEmail = () => {
           <Text style={styles.buttonText}>Recover Password</Text>
         )}
       </TouchableOpacity>
-      <Image style={styles.image} source={forgot_image} resizeMode="contain" />
+      <Image
+        style={styles.image}
+        source={require("@/src/assets/images/forgot-password.png")}
+        resizeMode="contain"
+      />
     </View>
   );
 };
@@ -105,12 +172,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 30,
+    position: "relative", // Important for placing the placeholder
   },
   input: {
     flex: 1,
     height: 50,
     fontSize: 16,
-    color: "#000",
+    color: "gray",
   },
   button: {
     width: screenWidth * 0.8,
@@ -138,5 +206,12 @@ const styles = StyleSheet.create({
     color: "red",
     fontSize: 14,
     marginBottom: 15,
+  },
+  placeholder: {
+    position: "absolute",
+    left: 10,
+    top: 0,
+    color: "#aaa",
+    backgroundColor: "white",
   },
 });

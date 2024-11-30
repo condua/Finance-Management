@@ -188,7 +188,7 @@ const Page = () => {
         }}
         onPress={() => router.navigate("/sendemail")}
       >
-        Quên mật khẩu ?
+        {t("passwordOtp.forgotpassword")}
       </Text>
 
       <View style={styles.signUpRedirect}>

@@ -351,5 +351,24 @@
     "edit":"Bạn không có quyền thực hiện chỉnh sửa giao dịch trên ví này",
     "close":"Đóng",
     "general":"Bạn không có quyền thực hiện điều này"
-  }
+  },
+  "passwordOtp": {
+  "password": "Mật khẩu",
+  "otp": "Mã OTP",
+  "forgotpassword": "Quên mật khẩu?",
+  "sendotp": "Gửi mã OTP",
+  "buttonverify": "Xác minh",
+  "resendotp": "Gửi lại mã OTP",
+  "passwordrecovery": "Khôi phục mật khẩu",
+  "passwordrecoverytitle": "Nhập email của bạn để khôi phục mật khẩu",
+  "buttonrecovery": "Khôi phục mật khẩu",
+  "email": "Email của bạn",
+  "checkyourphone": "Kiểm tra điện thoại của bạn",
+  "phonetitle": "Chúng tôi đã gửi mã đến điện thoại của bạn",
+  "codeexpire": "Mã hết hạn trong: ",
+  "enterpassword": "Nhập mật khẩu mới để khôi phục mật khẩu",
+  "newpassword": "Mật khẩu mới của bạn",
+  "recoverpassword": "Khôi phục mật khẩu"
+}
+
 }
