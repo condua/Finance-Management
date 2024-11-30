@@ -54,6 +54,12 @@ const Layout = () => {
         name="history"
         options={{ title: "History", animation: "fade_from_bottom" }}
       />
+      <Stack.Screen
+        name="list-histories"
+        options={{
+          title: t("transaction.transactionhistories"),
+        }}
+      />
       {/* <Stack.Screen name='first-wallet' options={{ title: 'Create new wallet', headerBackVisible: false }} /> */}
       <Stack.Screen name="categories-analytics" />
     </Stack>

@@ -168,6 +168,16 @@ export interface SubCategory {
   belong_to: string
 }
 
+
+export interface History {
+  amount: number
+  title: string
+  category: Category
+  img_url?: string
+  createdAt: string // thời gian ghi nhận lịch sử
+  description?: string
+  type: 'expense' | 'income'
+}
 export interface Transaction {
   _id: string
   amount: number
@@ -177,6 +187,7 @@ export interface Transaction {
   createdAt: string
   description?: string
   type: 'expense' | 'income'
+  histories: History[]
 }
 
 export interface User {

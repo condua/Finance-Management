@@ -52,6 +52,7 @@
     "i18next": "^23.14.0",
     "intl-pluralrules": "^2.0.1",
     "mime": "^4.0.4",
+    "moment-timezone": "^0.5.46",
     "money-management-mobile": "file:",
     "my-app": "file:",
     "react": "18.2.0",

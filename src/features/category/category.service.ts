@@ -32,7 +32,14 @@ export const categoryApi = appApi.injectEndpoints({
             ]
           : [{ type: 'Category', id: 'LIST' }],
     }),
-   
+    getCategoryById: builder.query<Category, string>({
+      query: (id) => ({
+        url: `${config.api.endpoints.categories}/${id}`,
+        method: 'GET',
+      }),
+      transformResponse: (response: { metadata: Category }) => response.metadata,
+      providesTags: (result, error, id) => [{ type: 'Category', id }],
+    }),
     createCategory: builder.mutation<Category, CategoryRequest>({
       query: (data) => ({
         url: `/categories`,
@@ -65,4 +72,4 @@ export const categoryApi = appApi.injectEndpoints({
   overrideExisting: true,
 })
 
-export const { useGetAllCategoriesQuery, useCreateCategoryMutation, useDeleteCategoryMutation, useUpdateCategoryMutation } = categoryApi
+export const { useGetAllCategoriesQuery,useGetCategoryByIdQuery, useCreateCategoryMutation, useDeleteCategoryMutation, useUpdateCategoryMutation } = categoryApi

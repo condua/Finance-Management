@@ -90,7 +90,11 @@
     "amount": "Số tiền",
     "typetransaction": "Loại giao dịch",
     "title": "Tên giao dịch",
-    "document": "Tài liệu"
+    "document": "Tài liệu",
+    "revision":"Lần sửa đổi",
+    "transactionhistories":"Lịch sử sửa giao dịch",
+    "edited":"Đã chỉnh sửa",
+    "loading":"Đang tải danh mục"
   },
   "budgets": {
     "youhavenobudgets": "Bạn chưa có ngân sách nào",

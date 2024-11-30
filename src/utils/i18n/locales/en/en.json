@@ -90,7 +90,11 @@
     "amount": "Amount",
     "typetransaction": "Type Transaction",
     "title": "Title",
-    "document": "Document"
+    "document": "Document",
+    "revision":"Revision",
+    "transactionhistories":"Transaction histories",
+    "edited":"Edited",
+    "loading":"Loading list..."
   },
   "budgets": {
     "youhavenobudgets": "You have no budgets yet",

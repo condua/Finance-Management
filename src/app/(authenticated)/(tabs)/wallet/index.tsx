@@ -19,7 +19,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { Href } from "expo-router";
 import { Stack, useRouter } from "expo-router";
 import { useEffect, useMemo } from "react";
-import { Image } from "react-native";
+import { Image, ScrollView } from "react-native";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { formatValue } from "react-native-currency-input-fields";
 
@@ -115,7 +115,7 @@ const Page = () => {
         }}
       />
       <Loading isLoading={getAllWallets.isFetching} text="Loading..." />
-      <View style={{ marginTop: 20, gap: 20 }}>
+      <ScrollView style={{ marginTop: 20, gap: 20, marginBottom: 160 }}>
         {/* <View
           style={{
             flexDirection: "row",
@@ -170,6 +170,7 @@ const Page = () => {
           <TouchableOpacity
             key={wallet._id}
             onPress={() => handleSelectWallet(wallet._id)}
+            style={{ marginVertical: 10 }}
           >
             <WalletItem
               name={wallet.name}
@@ -189,6 +190,7 @@ const Page = () => {
           <TouchableOpacity
             key={wallet._id}
             onPress={() => handleSelectWallet(wallet._id)}
+            style={{ marginVertical: 10 }}
           >
             <WalletItem
               name={wallet.name}
@@ -199,7 +201,7 @@ const Page = () => {
             />
           </TouchableOpacity>
         ))}
-      </View>
+      </ScrollView>
       <View style={{ position: "absolute", bottom: 100, alignSelf: "center" }}>
         <Button
           state="normal"
