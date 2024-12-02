@@ -80,19 +80,19 @@ const Home = () => {
           }
         });
       }
-    }, [user]) // Dependency on user to make sure it refetches if the user data changes
+    }, [user, invitations, refetchProfile]) // Thêm `invitations` và `refetchProfile` vào dependencies
   );
-  useEffect(() => {
-    if (user) {
-      refetchProfile().then((response) => {
-        const newInvitations = response.data?.invitations || [];
-        // Chỉ cập nhật nếu dữ liệu mới thay đổi
-        if (JSON.stringify(newInvitations) !== JSON.stringify(invitations)) {
-          setInvitations(newInvitations);
-        }
-      });
-    }
-  }, [user, refetchProfile]);
+  // useEffect(() => {
+  //   if (user) {
+  //     refetchProfile().then((response) => {
+  //       const newInvitations = response.data?.invitations || [];
+  //       // Chỉ cập nhật nếu dữ liệu mới thay đổi
+  //       if (JSON.stringify(newInvitations) !== JSON.stringify(invitations)) {
+  //         setInvitations(newInvitations);
+  //       }
+  //     });
+  //   }
+  // }, [user, refetchProfile]);
   // Adding 'user' as a dependency to reload on change
   const {
     data: transactions,

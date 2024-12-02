@@ -12,7 +12,10 @@ import {
 import React, { useState } from "react";
 import { useGetAllUsersQuery } from "@/src/features/user/user.service"; // Import the API hook
 import { useAppSelector } from "@/src/hooks/hooks";
-import { useInviteMemberWalletMutation } from "@/src/features/wallet/wallet.service";
+import {
+  useGetWalletByIdQuery,
+  useInviteMemberWalletMutation,
+} from "@/src/features/wallet/wallet.service";
 import { useLocale } from "@/src/hooks/useLocale";
 
 const screenWidth = Dimensions.get("window").width;
@@ -94,6 +97,11 @@ const SearchMember = () => {
   const inviterId = auth.user._id;
   const { walletId } = auth;
   const [inviteMember] = useInviteMemberWalletMutation();
+  const getWalletById = useGetWalletByIdQuery({
+    walletId,
+  });
+  const members = getWalletById?.currentData?.memberEmails || [];
+
   const { t } = useLocale();
   const handleInvite = async (userId: string) => {
     try {
@@ -107,7 +115,6 @@ const SearchMember = () => {
       Alert.alert("Error", "Failed to invite user. Please try again.");
     }
   };
-
   if (isLoading) {
     return <Text>Loading...</Text>;
   }
@@ -116,12 +123,20 @@ const SearchMember = () => {
     return <Text>Error loading users</Text>;
   }
 
+  // const filteredUsers =
+  //   users?.filter(
+  //     (user) =>
+  //       user?._id !== inviterId && // Exclude current user
+  //       (user?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //         user?.email?.toLowerCase().includes(searchQuery.toLowerCase()))
+  //   ) || [];
+  // Lọc danh sách người dùng theo email chính xác
   const filteredUsers =
     users?.filter(
       (user) =>
         user?._id !== inviterId && // Exclude current user
-        (user?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          user?.email?.toLowerCase().includes(searchQuery.toLowerCase()))
+        user?.email?.toLowerCase() === searchQuery.toLowerCase() && // Match email exactly
+        !members.some((member) => member._id === user._id) // Exclude existing members
     ) || [];
 
   return (

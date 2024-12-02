@@ -15,10 +15,13 @@ import { WebView } from "react-native-webview";
 import { BrandColor, Colors } from "@/src/constants/Colors";
 import {
   useDemoteFromAdminMutation,
+  useLeaveWalletMutation,
   usePromoteToAdminMutation,
   usePromoteToOwnerMutation,
+  useRemoveMemberMutation,
 } from "@/src/features/wallet/wallet.service";
 import { useLocale } from "@/src/hooks/useLocale";
+import { useRouter } from "expo-router";
 
 type Props = {
   walletId?: string;
@@ -40,9 +43,10 @@ const Promote: React.FC<Props> = ({
   const auth = useAppSelector((state) => state.auth);
   const { t } = useLocale();
   const userId = auth.user._id;
-  console.log(userId);
-  console.log(ownerId);
-  console.log(memberId);
+  // console.log(userId);
+  // console.log(ownerId);
+  // console.log(memberId);
+  const router = useRouter();
   const { walletId } = auth;
   const avatar =
     user?.avatar_url ||
@@ -53,7 +57,8 @@ const Promote: React.FC<Props> = ({
   const [promoteToAdmin, { isLoading, isError, isSuccess }] =
     usePromoteToAdminMutation();
   const [demoteMember] = useDemoteFromAdminMutation();
-
+  const [removeMember] = useRemoveMemberMutation();
+  const [leaveWallet] = useLeaveWalletMutation();
   const handlePromoteToLeader = async () => {
     try {
       await promoteToOwner({ walletId, memberId, ownerId }).unwrap();
@@ -82,9 +87,11 @@ const Promote: React.FC<Props> = ({
   };
   const handleDeleteMember = async () => {
     try {
-      // await deleteMember({ walletId, memberId, ownerId }).unwrap();
+      await removeMember({ walletId, memberId, ownerId }).unwrap();
       alert("Member was deleted successfully!");
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
   const handleLeaveGroup = async () => {
     if (ownerId === memberId) {
@@ -92,7 +99,7 @@ const Promote: React.FC<Props> = ({
       return;
     }
     try {
-      // await leaveGroup({ walletId, ownerId }).unwrap();
+      await leaveWallet({ walletId }).unwrap();
     } catch (error) {
       console.error("Failed to leave group:", error);
     }

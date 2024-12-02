@@ -181,6 +181,26 @@ demoteFromAdmin: builder.mutation<Response<{ message: string }>, PromoteMember>(
   invalidatesTags: [{ type: 'Wallet', id: 'LIST' }],
 }),
 
+removeMember: builder.mutation<
+  Response<{ message: string }>,
+  {
+    walletId: string;
+    memberId: string;
+    ownerId?: string; // Optional nếu ownerId được truyền qua headers
+  }
+>({
+  query: (body) => ({
+    url: `${config.api.endpoints.wallets}/${body.walletId}/remove/${body.memberId}`,
+    method: 'POST',
+    headers: {
+      ownerId: body.ownerId, // Optional nếu API yêu cầu
+    },
+  }),
+  invalidatesTags: (result, error, body) => [
+    { type: 'Wallet', id: body.walletId }, // Làm mới cache Wallet liên quan
+    { type: 'Wallet', id: 'LIST' }, // Làm mới danh sách Wallet
+  ],
+}),
 leaveWallet: builder.mutation<Response<{ message: string }>, { walletId: string }>({
   query: (body) => ({
     url: `${config.api.endpoints.wallets}/${body.walletId}/leave`,
@@ -206,5 +226,6 @@ export const {
   usePromoteToOwnerMutation,
   usePromoteToAdminMutation,
   useDemoteFromAdminMutation,
+  useRemoveMemberMutation,
   useLeaveWalletMutation,
 } = walletApi

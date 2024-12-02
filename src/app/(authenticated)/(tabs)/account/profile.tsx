@@ -1,4 +1,11 @@
-import { Dimensions, SafeAreaView, StyleSheet, Text, View } from "react-native";
+import {
+  Dimensions,
+  Image,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import {
   useGetInfoByIdQuery,
   useGetProfileQuery,
@@ -29,7 +36,9 @@ import RNDateTimePicker, {
 import { compareAsc, format } from "date-fns";
 import Toast from "react-native-toast-message";
 import Loading from "@/src/components/Loading";
-
+import * as ImagePicker from "expo-image-picker";
+const CLOUDINARY_UPLOAD_PRESET = "dy9yts4fa";
+const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dy9yts4fa/image/upload";
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
 
@@ -48,8 +57,13 @@ const initialProfile: ProfileForm = {
 const Page = () => {
   const router = useRouter();
   const { t } = useLocale();
-  const [profile, setProfile] = useState<ProfileForm>(initialProfile);
-
+  const [profile, setProfile] = useState({
+    name: "",
+    email: "",
+    avatar_url: "",
+    dob: "",
+    gender: "male",
+  });
   const [isFocusGender, setIsFocusGender] = useState(false);
   const [mode, setMode] = useState<AndroidMode>("date");
   const [show, setShow] = useState(false);
@@ -109,6 +123,69 @@ const Page = () => {
     showMode("date");
   };
 
+  const handlePickImage = async () => {
+    try {
+      const permissionResult =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permissionResult.granted) {
+        Toast.show({
+          type: "error",
+          text1: "Permission Denied",
+          text2: "You need to allow access to your photo library.",
+        });
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        quality: 1,
+      });
+
+      if (!result.canceled && result.assets.length > 0) {
+        const localUri = result.assets[0].uri;
+
+        const formData = new FormData();
+        formData.append("file", {
+          uri: localUri,
+          name: "profile.jpg",
+          type: "image/jpeg",
+        });
+        formData.append("upload_preset", "my_preset");
+        const response = await fetch(CLOUDINARY_URL, {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await response.json();
+        console.log("Cloudinary Response:", data);
+
+        if (data.secure_url) {
+          setProfile((prev) => ({
+            ...prev,
+            avatar_url: data.secure_url,
+          }));
+          formData.append("name", profile.name!);
+          formData.append("dob", profile.dob!);
+          formData.append("gender", profile.gender!);
+          formData.append("avatar_url", data.secure_url!);
+          // await updateProfile(formData).unwrap();
+          Toast.show({
+            type: "success",
+            text1: "Profile Updated",
+            text2: "Your avatar has been updated successfully.",
+          });
+        }
+      }
+    } catch (error) {
+      console.log("Error uploading image:", error);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Failed to upload image. Please try again.",
+      });
+    }
+  };
   const handleUpdateProfile = async () => {
     try {
       const formData = new FormData();
@@ -147,6 +224,15 @@ const Page = () => {
         }}
       />
       <Loading isLoading={getProfile.isFetching} text="Loading..." />
+      <TouchableOpacity onPress={handlePickImage}>
+        {profile.avatar_url ? (
+          <Image source={{ uri: profile.avatar_url }} style={styles.avatar} />
+        ) : (
+          <View style={styles.defaultAvatar}>
+            <AntDesign name="user" size={48} color={TextColor.Placeholder} />
+          </View>
+        )}
+      </TouchableOpacity>
       <View style={styles.form}>
         <Input
           label={t("settings.name")}
@@ -320,5 +406,22 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     borderWidth: 1,
     borderColor: BrandColor.Gray[300],
+  },
+  avatar: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    alignSelf: "center",
+    marginVertical: 20,
+  },
+  defaultAvatar: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: BrandColor.Gray[200],
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "center",
+    marginVertical: 20,
   },
 });
