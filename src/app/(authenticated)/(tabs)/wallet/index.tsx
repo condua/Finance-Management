@@ -51,7 +51,7 @@ const Page = () => {
   const handleSelectWallet = (_id: string) => {
     if (walletId === _id) return;
     dispatch(setDefaultWallet(_id));
-    router.back();
+    router.push("/(authenticated)/(tabs)/home");
   };
   // Lọc ví theo loại
   const privateWallets = useMemo(

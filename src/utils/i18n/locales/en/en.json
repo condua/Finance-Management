@@ -362,14 +362,29 @@
     "resendotp":"Resend OTP",
     "passwordrecovery": "Password Recovery",
     "passwordrecoverytitle": "Enter your email to recover your password",
-    "buttonrecovery":"Recover Password",
+    "buttonrecovery":"Recover your password",
     "email": "Your email",
     "checkyourphone":"Check your phone",
     "phonetitle":"We've sent the code to your phone",
     "codeexpire":"Code expire in: ",
     "enterpassword":"Enter your new password to recover your password",
     "newpassword":"Your new password",
-    "recoverpassword":"Recover password"
+    "recoverpassword":"Recover your password",
+    "emailreg":"Please enter a valid email address",
+    "success":"Success",
+    "changepasswordsuccessfully": "You have changed your password successfully",
+    "ok":"Ok",
+    "error":"Error",
+    "failchangepassword":"Failed to change password. Please try again.",
+    "close":"Close",
+    "passwordconditions":"Password must include at least 6 characters, 1 uppercase letter, 1 lowercase letter, and 1 number.",
+    "invalidpassword":"Invalid Password",
+    "verifysuccess":"OTP Verified Successfully",
+    "verifyfail":"Failed to verify OTP.",
+    "completeotp":"Please enter the complete OTP.",
+    "resendotpfail":"Failed to resend OTP.",
+    "resendotpsuccess":"OTP Resent Successfully"
+
   }
 
 }

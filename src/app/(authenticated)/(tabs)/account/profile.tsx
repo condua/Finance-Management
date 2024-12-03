@@ -169,7 +169,7 @@ const Page = () => {
           formData.append("dob", profile.dob!);
           formData.append("gender", profile.gender!);
           formData.append("avatar_url", data.secure_url!);
-          // await updateProfile(formData).unwrap();
+          await updateProfile(formData).unwrap();
           Toast.show({
             type: "success",
             text1: "Profile Updated",

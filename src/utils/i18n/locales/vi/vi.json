@@ -372,7 +372,22 @@
   "codeexpire": "Mã hết hạn trong: ",
   "enterpassword": "Nhập mật khẩu mới để khôi phục mật khẩu",
   "newpassword": "Mật khẩu mới của bạn",
-  "recoverpassword": "Khôi phục mật khẩu"
+  "recoverpassword": "Khôi phục mật khẩu",
+  "emailreg":"Vui lòng nhập đúng định dạng email",
+  "success": "Thành công",
+  "changepasswordsuccessfully": "Bạn đã đổi mật khẩu thành công",
+  "ok": "Đồng ý",
+  "error": "Lỗi",
+  "failchangepassword": "Đổi mật khẩu không thành công. Vui lòng thử lại.",
+  "close": "Đóng",
+  "passwordconditions": "Mật khẩu phải bao gồm ít nhất 6 ký tự, 1 chữ cái viết hoa, 1 chữ cái viết thường và 1 số.",
+  "invalidpassword": "Mật khẩu không hợp lệ",
+  "verifysuccess": "Xác thực OTP thành công",
+  "verifyfail": "Xác thực OTP không thành công.",
+  "completeotp": "Vui lòng nhập đầy đủ OTP.",
+  "resendotpfail": "Gửi lại OTP không thành công.",
+  "resendotpsuccess": "OTP đã được gửi lại thành công"
+
 }
 
 }

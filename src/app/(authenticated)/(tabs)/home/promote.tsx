@@ -9,12 +9,14 @@ import {
 } from "react-native";
 import React from "react";
 import { useSelector } from "react-redux";
-import { useAppSelector } from "@/src/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/src/hooks/hooks";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { WebView } from "react-native-webview";
 import { BrandColor, Colors } from "@/src/constants/Colors";
 import {
   useDemoteFromAdminMutation,
+  useGetAllWalletsQuery,
+  useGetWalletByIdQuery,
   useLeaveWalletMutation,
   usePromoteToAdminMutation,
   usePromoteToOwnerMutation,
@@ -22,6 +24,7 @@ import {
 } from "@/src/features/wallet/wallet.service";
 import { useLocale } from "@/src/hooks/useLocale";
 import { useRouter } from "expo-router";
+import { setDefaultWallet } from "@/src/features/auth/authSlice";
 
 type Props = {
   walletId?: string;
@@ -59,6 +62,15 @@ const Promote: React.FC<Props> = ({
   const [demoteMember] = useDemoteFromAdminMutation();
   const [removeMember] = useRemoveMemberMutation();
   const [leaveWallet] = useLeaveWalletMutation();
+  const walletById = useGetWalletByIdQuery({ walletId });
+  const walletMembers = walletById?.currentData?.members || [];
+  const dispatch = useAppDispatch();
+  const { data: allWallets } = useGetAllWalletsQuery();
+  const privateWallets =
+    allWallets?.filter((wallet) => wallet.type === "private") || [];
+
+  console.log(walletMembers.length);
+
   const handlePromoteToLeader = async () => {
     try {
       await promoteToOwner({ walletId, memberId, ownerId }).unwrap();
@@ -93,13 +105,35 @@ const Promote: React.FC<Props> = ({
       console.log(error);
     }
   };
+
+  // Chọn ví mặc định và quay lại màn hình chính
+  const handleSelectWallet = (_id: string) => {
+    if (walletId === _id) return;
+    dispatch(setDefaultWallet(_id));
+    router.push("/(authenticated)/(tabs)/home");
+  };
+
   const handleLeaveGroup = async () => {
+    if (walletMembers.length <= 1) {
+      await leaveWallet({ walletId }).unwrap();
+      if (privateWallets.length > 0) {
+        handleSelectWallet(privateWallets[0]._id);
+      }
+
+      router.push("/(authenticated)/(tabs)/wallet");
+      return;
+    }
     if (ownerId === memberId) {
       alert("Bạn phải chuyển quyền trưởng nhóm trước khi rời khỏi nhóm");
       return;
     }
     try {
       await leaveWallet({ walletId }).unwrap();
+      if (privateWallets.length > 0) {
+        dispatch(setDefaultWallet(privateWallets[0]._id));
+      }
+
+      router.push("/(authenticated)/(tabs)/wallet");
     } catch (error) {
       console.error("Failed to leave group:", error);
     }

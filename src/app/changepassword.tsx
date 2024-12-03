@@ -20,6 +20,7 @@ import {
   Dialog,
   AlertNotificationRoot,
 } from "react-native-alert-notification";
+import { useLocale } from "../hooks/useLocale";
 type Props = {};
 
 const screenHeight = Dimensions.get("window").height;
@@ -35,7 +36,7 @@ const changepassword = (props: Props) => {
   const forgotImage = require("@/src/assets/images/forgot-password.png");
   const [eye, setEye] = useState(close_eye);
   const [isLoading, setIsLoading] = useState(false);
-
+  const { t } = useLocale();
   const [changePasswordByOtp] = useChangePasswordByOtpMutation();
 
   const handleSecureText = () => {
@@ -53,10 +54,9 @@ const changepassword = (props: Props) => {
     if (!validatePassword(newPassword)) {
       Dialog.show({
         type: ALERT_TYPE.DANGER,
-        title: "Invalid Password",
-        textBody:
-          "Password must include at least 6 characters, 1 uppercase letter, 1 lowercase letter, and 1 number.",
-        button: "Close",
+        title: t("passwordOtp.invalidpassword"),
+        textBody: t("passwordOtp.passwordconditions"),
+        button: t("passwordOtp.close"),
       });
       return;
     }
@@ -73,9 +73,9 @@ const changepassword = (props: Props) => {
 
       Dialog.show({
         type: ALERT_TYPE.SUCCESS,
-        title: "Success",
-        textBody: "You have changed your password successfully",
-        button: "Ok",
+        title: t("passwordOtp.success"),
+        textBody: t("passwordOtp.changepasswordsuccessfully"),
+        button: t("passwordOtp.ok"),
         onPressButton: () => router.push("/login"), // Điều hướng khi nhấn "close"
       });
     } catch (error) {
@@ -83,9 +83,9 @@ const changepassword = (props: Props) => {
       setIsLoading(false);
       Dialog.show({
         type: ALERT_TYPE.DANGER,
-        title: "Error",
-        textBody: "Failed to change password. Please try again.",
-        button: "Close",
+        title: t("passwordOtp.error"),
+        textBody: t("passwordOtp.failchangepassword"),
+        button: t("passwordOtp.close"),
       });
     }
   };
@@ -93,14 +93,12 @@ const changepassword = (props: Props) => {
   return (
     <AlertNotificationRoot>
       <View style={styles.container}>
-        <Text style={styles.title}>Password recovery</Text>
-        <Text style={styles.subtitle}>
-          Enter your new password to recover your password
-        </Text>
+        <Text style={styles.title}>{t("passwordOtp.passwordrecovery")}</Text>
+        <Text style={styles.subtitle}>{t("passwordOtp.enterpassword")}</Text>
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
-            placeholder="Your new password"
+            placeholder={t("passwordOtp.newpassword")}
             value={newPassword}
             onChangeText={(text) => setNewPassword(text)}
             secureTextEntry={secureText}
@@ -117,7 +115,9 @@ const changepassword = (props: Props) => {
           {isLoading ? (
             <ActivityIndicator size="small" color="#FFF" />
           ) : (
-            <Text style={styles.buttonText}>Recover password</Text>
+            <Text style={styles.buttonText}>
+              {t("passwordOtp.recoverpassword")}
+            </Text>
           )}
         </TouchableOpacity>
         <Image style={styles.image} source={forgotImage} resizeMode="contain" />

@@ -13,6 +13,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { useRouter } from "expo-router";
 import { EmailRegExp } from "../utils/RegExp";
 import { useSendEmailMutation } from "../features/auth/auth.service";
+import { useLocale } from "../hooks/useLocale";
 
 const screenHeight = Dimensions.get("window").height;
 const screenWidth = Dimensions.get("window").width;
@@ -26,9 +27,10 @@ const SendEmail = () => {
   const placeholderAnim = useRef(new Animated.Value(0)).current; // Giá trị để điều khiển animation
   const [exampleEmail, setExampleEmail] = useState("Example@gmail.com");
   // Kích hoạt animation khi focus/blur
+  const { t } = useLocale();
   const handleFocus = () => {
     setIsFocused(true);
-    setExampleEmail("Your email");
+    setExampleEmail(t("passwordOtp.email"));
     Animated.timing(placeholderAnim, {
       toValue: 1, // Di chuyển lên
       duration: 200,
@@ -50,7 +52,7 @@ const SendEmail = () => {
 
   const handleSendEmail = async () => {
     if (!EmailRegExp.test(email)) {
-      setError("Please enter a valid email address.");
+      setError(t("passwordOtp.emailreg"));
       return;
     }
 
@@ -90,9 +92,9 @@ const SendEmail = () => {
   });
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Password Recovery</Text>
+      <Text style={styles.title}>{t("passwordOtp.passwordrecovery")}</Text>
       <Text style={styles.subtitle}>
-        Enter your email to recover your password
+        {t("passwordOtp.passwordrecoverytitle")}
       </Text>
       <View style={styles.inputContainer}>
         {/* Placeholder */}
@@ -129,7 +131,9 @@ const SendEmail = () => {
         {isLoading ? (
           <ActivityIndicator color="#FFF" />
         ) : (
-          <Text style={styles.buttonText}>Recover Password</Text>
+          <Text style={styles.buttonText}>
+            {t("passwordOtp.buttonrecovery")}
+          </Text>
         )}
       </TouchableOpacity>
       <Image

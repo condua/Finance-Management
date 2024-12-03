@@ -9,6 +9,7 @@ import { useGetWalletByIdQuery } from "@/src/features/wallet/wallet.service";
 import Modal from "react-native-modal";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useLocale } from "@/src/hooks/useLocale";
+import { useNavigate } from "react-router-native";
 
 export const CustomAlertModal = ({ isVisible, onClose, title, message }) => {
   const { t } = useLocale();
@@ -36,6 +37,7 @@ function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const owner = wallet?.currentData?.owner;
   const walletType = wallet?.currentData?.type;
   const { bottom } = useSafeAreaInsets();
+
   const hideTabs = useMemo(() => {
     for (let route of state.routes) {
       const { options } = descriptors[route.key];

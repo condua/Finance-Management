@@ -24,6 +24,7 @@ import {
   Dialog,
   AlertNotificationRoot,
 } from "react-native-alert-notification";
+import { useLocale } from "../hooks/useLocale";
 type Props = {};
 
 const verifyotp = (props: Props) => {
@@ -34,6 +35,7 @@ const verifyotp = (props: Props) => {
   const [verifyOtp, { isLoading }] = useVerifyOtpMutation();
   const [reSendOtp] = useResendOtpMutation();
   const [error, setError] = useState<string | null>(null);
+  const { t } = useLocale();
 
   const handleInputChange = (value, index) => {
     // Chỉ cho phép nhập số
@@ -61,9 +63,9 @@ const verifyotp = (props: Props) => {
         // Alert.alert("Success", "OTP Verified Successfully");
         Dialog.show({
           type: ALERT_TYPE.SUCCESS,
-          title: "Success",
-          textBody: "OTP Verified Successfully",
-          button: "Close",
+          title: t("passwordOtp.success"),
+          textBody: t("passwordOtp.verifysuccess"),
+          button: t("passwordOtp.ok"),
           onPressButton: () => {
             router.push({
               pathname: "/changepassword",
@@ -75,18 +77,18 @@ const verifyotp = (props: Props) => {
         // Alert.alert("Error", error?.message || "Failed to verify OTP.");
         Dialog.show({
           type: ALERT_TYPE.DANGER,
-          title: "Error",
-          textBody: error?.message || "Failed to verify OTP.",
-          button: "Close",
+          title: t("passwordOtp.error"),
+          textBody: t("passwordOtp.verifyfail"),
+          button: t("passwordOtp.close"),
         });
       }
     } else {
       // Alert.alert("Error", "Please enter the complete OTP.");
       Dialog.show({
         type: ALERT_TYPE.DANGER,
-        title: "Error",
-        textBody: "Please enter the complete OTP.",
-        button: "Close",
+        title: t("passwordOtp.error"),
+        textBody: t("passwordOtp.completeotp"),
+        button: t("passwordOtp.close"),
       });
     }
   };
@@ -99,17 +101,17 @@ const verifyotp = (props: Props) => {
 
       Dialog.show({
         type: ALERT_TYPE.SUCCESS,
-        title: "Success",
-        textBody: "OTP Resent Successfully",
-        button: "Close",
+        title: t("passwordOtp.success"),
+        textBody: t("passwordOtp.resendotpsuccess"),
+        button: t("passwordOtp.close"),
       });
     } catch (err) {
       // Alert.alert("Error", err.message || "Failed to resend OTP.");
       Dialog.show({
         type: ALERT_TYPE.DANGER,
-        title: "Error",
-        textBody: err?.message || "Failed to resend OTP.",
-        button: "Close",
+        title: t("passwordOtp.error"),
+        textBody: t("passwordOtp.resendotpfail"),
+        button: t("passwordOtp.close"),
       });
     }
     setTimer(300); // Reset timer
@@ -132,8 +134,8 @@ const verifyotp = (props: Props) => {
   return (
     <AlertNotificationRoot>
       <View style={styles.container}>
-        <Text style={styles.title}>Check your phone</Text>
-        <Text style={styles.subtitle}>We’ve sent the code to your phone</Text>
+        <Text style={styles.title}>{t("passwordOtp.checkyourphone")}</Text>
+        <Text style={styles.subtitle}>{t("passwordOtp.phonetitle")}</Text>
         <View style={styles.otpContainer}>
           {otp.map((digit, index) => (
             <TextInput
@@ -147,12 +149,15 @@ const verifyotp = (props: Props) => {
             />
           ))}
         </View>
-        <Text style={styles.timer}>Code expires in: {formatTimer(timer)}</Text>
+        <Text style={styles.timer}>
+          {t("passwordOtp.codeexpire")}
+          {formatTimer(timer)}
+        </Text>
         <TouchableOpacity style={styles.verifyButton} onPress={handleVerify}>
-          <Text style={styles.verifyText}>Verify</Text>
+          <Text style={styles.verifyText}>{t("passwordOtp.buttonverify")}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.resendButton} onPress={handleResend}>
-          <Text style={styles.resendText}>Send again</Text>
+          <Text style={styles.resendText}>{t("passwordOtp.resendotp")}</Text>
         </TouchableOpacity>
       </View>
     </AlertNotificationRoot>
