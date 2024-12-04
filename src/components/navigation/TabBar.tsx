@@ -10,6 +10,7 @@ import Modal from "react-native-modal";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useLocale } from "@/src/hooks/useLocale";
 import { useNavigate } from "react-router-native";
+import { useRouter } from "expo-router";
 
 export const CustomAlertModal = ({ isVisible, onClose, title, message }) => {
   const { t } = useLocale();
@@ -37,15 +38,22 @@ function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const owner = wallet?.currentData?.owner;
   const walletType = wallet?.currentData?.type;
   const { bottom } = useSafeAreaInsets();
+  const router = useRouter();
   if (!wallet?.currentData) {
     // Nếu ví không tồn tại
     Alert.alert(
       "Thông báo",
       "Ví của bạn không còn tồn tại. Chuyển đến trang ví.",
-      [{ text: "OK", onPress: () => navigate("/wallet") }]
+      [
+        {
+          text: "OK",
+          onPress: () => router.push("/(authenticated)/(tabs)/wallet"),
+        },
+      ]
     );
     return false;
   }
+
   const hideTabs = useMemo(() => {
     for (let route of state.routes) {
       const { options } = descriptors[route.key];
