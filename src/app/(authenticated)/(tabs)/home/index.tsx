@@ -68,7 +68,7 @@ const Home = () => {
   );
   const [invitations, setInvitations] = useState([]);
 
-  console.log(getUser?.invitations.length);
+  // console.log(getUser?.invitations.length);
   useFocusEffect(
     useCallback(() => {
       if (user) {
