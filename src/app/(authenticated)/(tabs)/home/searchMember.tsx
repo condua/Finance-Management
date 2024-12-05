@@ -101,7 +101,6 @@ const SearchMember = () => {
     walletId,
   });
   const members = getWalletById?.currentData?.memberEmails || [];
-
   const { t } = useLocale();
   const handleInvite = async (userId: string) => {
     try {
@@ -136,7 +135,7 @@ const SearchMember = () => {
       (user) =>
         user?._id !== inviterId && // Exclude current user
         user?.email?.toLowerCase() === searchQuery.toLowerCase() && // Match email exactly
-        !members.some((member) => member._id === user._id) // Exclude existing members
+        !members.includes(user.email.toLowerCase()) // Exclude existing members
     ) || [];
 
   return (
