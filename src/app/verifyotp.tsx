@@ -160,6 +160,11 @@ const verifyotp = (props: Props) => {
           <Text style={styles.resendText}>{t("passwordOtp.resendotp")}</Text>
         </TouchableOpacity>
       </View>
+      <Image
+        style={styles.image}
+        source={require("@/src/assets/images/forgot-password.png")}
+        resizeMode="contain"
+      />
     </AlertNotificationRoot>
   );
 };
@@ -169,7 +174,7 @@ export default verifyotp;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    // justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#fff",
     padding: 20,
@@ -185,7 +190,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     marginBottom: 10,
-    marginTop: -50,
+    marginTop: 100,
   },
   subtitle: {
     fontSize: 16,
@@ -214,7 +219,7 @@ const styles = StyleSheet.create({
   },
   verifyButton: {
     width: 200,
-    backgroundColor: "#fcb900",
+    backgroundColor: "#FFD700",
     paddingVertical: 15,
     // paddingHorizontal: 80,
     borderRadius: 30,
@@ -238,5 +243,11 @@ const styles = StyleSheet.create({
   resendText: {
     color: "#555",
     fontSize: 16,
+  },
+  image: {
+    position: "absolute",
+    bottom: -10,
+    width: "100%",
+    height: 300,
   },
 });

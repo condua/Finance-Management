@@ -59,16 +59,31 @@ const Home = () => {
   const [type, setType] = useState("expense");
   const { walletId } = useAppSelector((state) => state.auth);
   const { user } = useAppSelector((state) => state.auth);
-  const { data, isFetching: isFetchingWallet } = useGetWalletByIdQuery({
+  const {
+    data,
+    isFetching: isFetchingWallet,
+    refetch: refetchWallet,
+  } = useGetWalletByIdQuery({
     walletId: walletId,
   });
+
   // console.log(data);
   const { data: getUser, refetch: refetchProfile } = useGetInfoByIdQuery(
     user._id
   );
   const [invitations, setInvitations] = useState([]);
 
+  // Refetch wallets whenever the screen is focused
+
   // console.log(getUser?.invitations.length);
+  // Trigger refetch wallet data whenever the screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      if (walletId) {
+        refetchWallet();
+      }
+    }, [walletId, refetchWallet])
+  );
   useFocusEffect(
     useCallback(() => {
       if (user) {

@@ -4,13 +4,17 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BrandColor, NeutralColor } from "@/src/constants/Colors";
 import { Pressable } from "react-native";
 import { useMemo, useState } from "react";
-import { useAppSelector } from "@/src/hooks/hooks";
-import { useGetWalletByIdQuery } from "@/src/features/wallet/wallet.service";
+import { useAppDispatch, useAppSelector } from "@/src/hooks/hooks";
+import {
+  useGetAllWalletsQuery,
+  useGetWalletByIdQuery,
+} from "@/src/features/wallet/wallet.service";
 import Modal from "react-native-modal";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useLocale } from "@/src/hooks/useLocale";
 import { useNavigate } from "react-router-native";
 import { useRouter } from "expo-router";
+import { setDefaultWallet } from "@/src/features/auth/authSlice";
 
 export const CustomAlertModal = ({ isVisible, onClose, title, message }) => {
   const { t } = useLocale();
@@ -39,20 +43,36 @@ function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const walletType = wallet?.currentData?.type;
   const { bottom } = useSafeAreaInsets();
   const router = useRouter();
-  if (!wallet?.currentData) {
-    // Nếu ví không tồn tại
-    Alert.alert(
-      "Thông báo",
-      "Ví của bạn không còn tồn tại. Chuyển đến trang ví.",
-      [
-        {
-          text: "OK",
-          onPress: () => router.push("/(authenticated)/(tabs)/wallet"),
-        },
-      ]
-    );
-    return false;
-  }
+  const dispatch = useAppDispatch();
+  const { data: allWallets, isLoading } = useGetAllWalletsQuery();
+  const [isAlertVisible, setAlertVisible] = useState(false);
+
+  const privateWallets =
+    allWallets?.filter((wallet) => wallet.type === "private") || [];
+  const [hasShownAlert, setHasShownAlert] = useState(false); // Trạng thái kiểm soát thông báo
+  // const handleSelectWallet = (_id: string) => {
+  //   if (walletId === _id) return;
+  //   dispatch(setDefaultWallet(_id));
+  //   router.push("/(authenticated)/(tabs)/home");
+  //   return;
+  // };
+
+  // if (!wallet?.currentData && !hasShownAlert) {
+  //   setHasShownAlert(true);
+  //   Alert.alert(
+  //     "Thông báo",
+  //     "Ví của bạn không còn tồn tại. Chuyển đến trang ví.",
+  //     [
+  //       {
+  //         text: "OK",
+  //         onPress: () => {
+  //           handleSelectWallet(privateWallets[0]?._id);
+  //           router.push("/(authenticated)/(tabs)/wallet");
+  //         },
+  //       },
+  //     ]
+  //   );
+  // }
 
   const hideTabs = useMemo(() => {
     for (let route of state.routes) {
@@ -65,8 +85,6 @@ function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
       }
     }
   }, [state]);
-
-  const [isAlertVisible, setAlertVisible] = useState(false);
 
   return (
     <View
