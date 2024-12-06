@@ -70,6 +70,7 @@
     "placeholdername": "Enter your wallet name"
   },
   "transaction": {
+    "editorName":"Editor name",
     "newtransaction": "New Transaction",
     "edittransaction": "Edit Transaction",
     "continue": "Continue",

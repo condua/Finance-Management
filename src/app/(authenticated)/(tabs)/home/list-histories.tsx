@@ -59,7 +59,7 @@ const DetailsTransaction: React.FC<DetailsTransactionProps> = ({
       </Text>
       {wallet?.type === "shared" && (
         <View style={styles.detailRow}>
-          <Text style={styles.label}>Người chỉnh sửa:</Text>
+          <Text style={styles.label}>{t("transaction.editorName")}:</Text>
           <Text style={[styles.value, { fontWeight: "bold" }]}>
             {history.name || "N/A"}
           </Text>

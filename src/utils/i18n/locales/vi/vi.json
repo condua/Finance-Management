@@ -70,6 +70,7 @@
     "placeholdername": "Nhập tên ví của bạn"
   },
   "transaction": {
+    "editorName":"Người chỉnh sửa",
     "newtransaction": "Tạo mới giao dịch",
     "edittransaction": "Chỉnh sửa giao dịch",
     "continue": "Tiếp tục",

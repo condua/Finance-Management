@@ -114,8 +114,9 @@ function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
           // console.log(route.name);
           if (route.name === "transaction") {
             if (
-              walletType === "shared" &&
-              (owner === userId || admins.includes(userId))
+              walletType === "private" ||
+              (walletType === "shared" &&
+                (owner === userId || admins.includes(userId)))
             ) {
               navigation.navigate(route.name, route.params);
             } else {
