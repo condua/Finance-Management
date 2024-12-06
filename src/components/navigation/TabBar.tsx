@@ -46,7 +46,6 @@ function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const dispatch = useAppDispatch();
   const { data: allWallets, isLoading } = useGetAllWalletsQuery();
   const [isAlertVisible, setAlertVisible] = useState(false);
-
   const privateWallets =
     allWallets?.filter((wallet) => wallet.type === "private") || [];
   const [hasShownAlert, setHasShownAlert] = useState(false); // Trạng thái kiểm soát thông báo
@@ -116,12 +115,12 @@ function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
           if (route.name === "transaction") {
             if (
               walletType === "shared" &&
-              (owner !== userId || admins.includes(userId))
+              (owner === userId || admins.includes(userId))
             ) {
+              navigation.navigate(route.name, route.params);
+            } else {
               setAlertVisible(true);
               return;
-            } else {
-              navigation.navigate(route.name, route.params);
             }
           }
           if (!isFocused && !event.defaultPrevented) {

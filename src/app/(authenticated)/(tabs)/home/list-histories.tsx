@@ -9,9 +9,11 @@ import moment from "moment-timezone"; // Import moment-timezone
 import { BrandColor } from "@/src/constants/Colors";
 import { useLocale } from "@/src/hooks/useLocale";
 import { getCurrencySymbol } from "@/src/utils/getCurrencySymbol";
+import { useGetWalletByIdQuery } from "@/src/features/wallet/wallet.service";
 
 // Kiểu dữ liệu cho từng giao dịch
 interface TransactionHistory {
+  name: string;
   amount: string;
   title: string;
   category: string;
@@ -40,16 +42,29 @@ const DetailsTransaction: React.FC<DetailsTransactionProps> = ({
 }) => {
   const { data: category, isLoading } = useGetCategoryByIdQuery(categoryId);
   const { t, currencyCode } = useLocale();
+  const { walletId } = useAppSelector((state) => state.auth);
+  const { data: wallet, isLoading: walletLoading } = useGetWalletByIdQuery({
+    walletId,
+  });
   if (isLoading) {
     return <Text>{t("transaction.loading")}</Text>;
   }
-
+  if (walletLoading) {
+    return <Text>Loading...</Text>;
+  }
   return (
     <View style={styles.cardContainer}>
       <Text style={styles.cardTitle}>
         {t("transaction.revision")}: {index + 1}
       </Text>
-
+      {wallet?.type === "shared" && (
+        <View style={styles.detailRow}>
+          <Text style={styles.label}>Người chỉnh sửa:</Text>
+          <Text style={[styles.value, { fontWeight: "bold" }]}>
+            {history.name || "N/A"}
+          </Text>
+        </View>
+      )}
       <View style={styles.detailRow}>
         <Text style={styles.label}>{t("transaction.amount")}:</Text>
         <Text

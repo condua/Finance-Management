@@ -126,7 +126,7 @@ inviteMemberWallet: builder.mutation<Response<{ message: string }>, InviteMember
       },
     };
   },
-  invalidatesTags: [{ type: 'Wallet', id: 'LIST' }], // Điều chỉnh dựa trên cách bạn muốn xử lý cache
+  invalidatesTags: (result, error, { walletId }) => [{ type: "Wallet", id: walletId }], // Điều chỉnh dựa trên cách bạn muốn xử lý cache
 }),
 
  // Add respondToInvitation mutation here
@@ -138,9 +138,10 @@ inviteMemberWallet: builder.mutation<Response<{ message: string }>, InviteMember
       response: body.response,
     },
   }),
-  invalidatesTags: (result, error, body) => [
+  invalidatesTags: (result, error, body, walletId) => [
     { type: 'User', id: 'PARTIAL-LIST' }, // Làm mới danh sách Wallet
-    { type: 'User', id: body?.userId }, // Làm mới dữ liệu của User sau khi chấp nhận/từ chối
+    { type: 'User', id: body?.userId },
+     // Làm mới dữ liệu của User sau khi chấp nhận/từ chối
   ],
 }),
 
@@ -156,7 +157,7 @@ promoteToOwner: builder.mutation<Response<{ message: string }>, PromoteMember>({
       ownerId: body.ownerId
     },
   }),
-  invalidatesTags: [{ type: 'Wallet', id: 'LIST' }],
+  invalidatesTags: (result, error, { walletId }) => [{ type: "Wallet", id: walletId }], // Điều chỉnh dựa trên cách bạn muốn xử lý cache
 }),
 
 promoteToAdmin: builder.mutation<Response<{ message: string }>, PromoteMember>({
@@ -167,7 +168,7 @@ promoteToAdmin: builder.mutation<Response<{ message: string }>, PromoteMember>({
       ownerId: body.ownerId
     },
   }),
-  invalidatesTags: [{ type: 'Wallet', id: 'LIST' }],
+  invalidatesTags: (result, error, { walletId }) => [{ type: "Wallet", id: walletId }], // Điều chỉnh dựa trên cách bạn muốn xử lý cache
 }),
 
 demoteFromAdmin: builder.mutation<Response<{ message: string }>, PromoteMember>({
@@ -178,7 +179,7 @@ demoteFromAdmin: builder.mutation<Response<{ message: string }>, PromoteMember>(
       ownerId: body.ownerId, // Optional, depending on API requirements
     },
   }),
-  invalidatesTags: [{ type: 'Wallet', id: 'LIST' }],
+  invalidatesTags: (result, error, { walletId }) => [{ type: "Wallet", id: walletId }], // Điều chỉnh dựa trên cách bạn muốn xử lý cache
 }),
 
 removeMember: builder.mutation<
