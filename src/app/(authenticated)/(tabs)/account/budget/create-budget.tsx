@@ -1,4 +1,9 @@
-import { BackgroundColor, BrandColor, NeutralColor, TextColor } from '@/src/constants/Colors'
+import {
+  BackgroundColor,
+  BrandColor,
+  NeutralColor,
+  TextColor,
+} from "@/src/constants/Colors";
 import {
   Alert,
   AnimatableStringValue,
@@ -7,7 +12,7 @@ import {
   StyleSheet,
   Text,
   View,
-} from 'react-native'
+} from "react-native";
 import {
   startOfWeek,
   endOfWeek,
@@ -18,142 +23,148 @@ import {
   endOfQuarter,
   startOfYear,
   endOfYear,
-  set
-} from 'date-fns'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useLocale } from '@/src/hooks/useLocale'
-import { TouchableOpacity } from 'react-native'
-import { Image } from 'react-native'
-import Input from '@/src/components/Input'
+  set,
+} from "date-fns";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "@/src/hooks/useLocale";
+import { TouchableOpacity } from "react-native";
+import { Image } from "react-native";
+import Input from "@/src/components/Input";
 
-import { SafeAreaView } from 'react-native'
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet'
-import { ChevronDown, ChevronRight, Plus, X } from 'react-native-feather'
-import { ThemedText } from '@/src/components/ThemedText'
-import { TextType } from '@/src/types/text'
-import { Dimensions } from 'react-native'
-import { getImg } from '@/src/utils/getImgFromUri'
-import {  useAppSelector } from '@/src/hooks/hooks'
-import { useGetAllCategoriesQuery } from '@/src/features/category/category.service'
-import Button from '@/src/components/buttons/Button'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Budget, Category, FinancialPlan, Transaction } from '@/src/types/enum'
-import { AntDesign, Entypo, Fontisto } from '@expo/vector-icons'
-import { useCreatePlanMutation } from '@/src/features/plan/plan.service'
-
+import { SafeAreaView } from "react-native";
 import {
-  Stack,
-  useLocalSearchParams,
-  useRouter,
-} from 'expo-router'
+  BottomSheetBackdrop,
+  BottomSheetModal,
+  BottomSheetScrollView,
+} from "@gorhom/bottom-sheet";
+import { ChevronDown, ChevronRight, Plus, X } from "react-native-feather";
+import { ThemedText } from "@/src/components/ThemedText";
+import { TextType } from "@/src/types/text";
+import { Dimensions } from "react-native";
+import { getImg } from "@/src/utils/getImgFromUri";
+import { useAppSelector } from "@/src/hooks/hooks";
+import { useGetAllCategoriesQuery } from "@/src/features/category/category.service";
+import Button from "@/src/components/buttons/Button";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Budget, Category, FinancialPlan, Transaction } from "@/src/types/enum";
+import { AntDesign, Entypo, Fontisto } from "@expo/vector-icons";
+import { useCreatePlanMutation } from "@/src/features/plan/plan.service";
 
-import Header from '@/src/components/navigation/Header'
-import HeaderButton from '@/src/components/navigation/HeaderButton'
-import { useActionSheet } from '@expo/react-native-action-sheet'
-import CurrencyInput from 'react-native-currency-input-fields'
-import { validations } from '@/src/utils/validations'
-import dayjs, { Dayjs } from 'dayjs'
-import DateTimePicker from 'react-native-ui-datepicker'
-import Modal from 'react-native-modal'
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 
+import Header from "@/src/components/navigation/Header";
+import HeaderButton from "@/src/components/navigation/HeaderButton";
+import { useActionSheet } from "@expo/react-native-action-sheet";
+import CurrencyInput from "react-native-currency-input-fields";
+import { validations } from "@/src/utils/validations";
+import dayjs, { Dayjs } from "dayjs";
+import DateTimePicker from "react-native-ui-datepicker";
+import Modal from "react-native-modal";
 
-const screenWidth = Dimensions.get('window').width
-const screenHeight = Dimensions.get('window').height
+const screenWidth = Dimensions.get("window").width;
+const screenHeight = Dimensions.get("window").height;
 
-const initialBudget: Omit<FinancialPlan, '_id'> = {
-  name: '',
-  type: 'budget',
+const initialBudget: Omit<FinancialPlan, "_id"> = {
+  name: "",
+  type: "budget",
   end_date: new Date().toString(),
   attributes: {
     target_amount: 0,
     categories: [] as Category[],
   } as Budget,
-}
-
-
+};
 
 const Page = () => {
-  const { walletId } = useAppSelector((state) => state.auth)
-  const { showActionSheetWithOptions } = useActionSheet()
-  const { id } = useLocalSearchParams() as { id: string }
+  const { walletId } = useAppSelector((state) => state.auth);
+  const { showActionSheetWithOptions } = useActionSheet();
+  const { id } = useLocalSearchParams() as { id: string };
   const [isValid, setIsValid] = useState({
     title: false,
     target_amount: false,
     categories: false,
-    period: false
-  })
+    period: false,
+  });
 
-  const [indexOptions, setIndexOptions] = useState(0)
-  const { bottom } = useSafeAreaInsets()
-  const [budget, setBudget] = useState(initialBudget)
-    const [showCalendar, setShowCalendar] = useState(false)
-    const [customPeriod, setCustomPeriod] = useState<
-      | {
-          startDate: Dayjs
-          endDate: Dayjs
-        }
-      | undefined
-    >({
-      startDate: dayjs(),
-      endDate: dayjs(),
-    })
+  const [indexOptions, setIndexOptions] = useState(0);
+  const { bottom } = useSafeAreaInsets();
+  const [budget, setBudget] = useState(initialBudget);
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [customPeriod, setCustomPeriod] = useState<
+    | {
+        startDate: Dayjs;
+        endDate: Dayjs;
+      }
+    | undefined
+  >({
+    startDate: dayjs(),
+    endDate: dayjs(),
+  });
 
-  const { t } = useLocale()
-  const router = useRouter()
-  const { currencyCode } = useLocale()
+  const { t } = useLocale();
+  const router = useRouter();
+  const { currencyCode } = useLocale();
 
-  const bottomSheetCategoryModalRef = useRef<BottomSheetModal>(null)
-  const snapPointsCategory = useMemo(() => ['85%'], [])
+  const bottomSheetCategoryModalRef = useRef<BottomSheetModal>(null);
+  const snapPointsCategory = useMemo(() => ["85%"], []);
 
-  const [createBudget, createBudgetResult] = useCreatePlanMutation()
-  const { data: categoriesRes } = useGetAllCategoriesQuery()
+  const [createBudget, createBudgetResult] = useCreatePlanMutation();
+  const { data: categoriesRes } = useGetAllCategoriesQuery();
 
   const categoriesFilteredByType = useMemo(
-    () => categoriesRes?.filter((category) => category.type === 'expense'),
+    () => categoriesRes?.filter((category) => category.type === "expense"),
     [categoriesRes]
-  )
+  );
 
   const selectedCategoryIds =
     useMemo(() => {
-      return (budget.attributes as Budget).categories.map((category) => category._id )
-    }, [budget]) || []
+      return (budget.attributes as Budget).categories.map(
+        (category) => category._id
+      );
+    }, [budget]) || [];
 
   const { options, values } = useMemo(() => {
-    const startWeek = startOfWeek(new Date(), { weekStartsOn: 1 })
-    const endWeek = endOfWeek(new Date(), { weekStartsOn: 1 })
+    const startWeek = startOfWeek(new Date(), { weekStartsOn: 1 });
+    const endWeek = endOfWeek(new Date(), { weekStartsOn: 1 });
 
     // Format the dates as needed (optional)
-    const formattedStartWeek = format(startWeek, 'dd/MM')
-    const formattedEndWeek = format(endWeek, 'dd/MM')
+    const formattedStartWeek = format(startWeek, "dd/MM");
+    const formattedEndWeek = format(endWeek, "dd/MM");
 
-    const startMonth = startOfMonth(new Date())
-    const endMonth = endOfMonth(new Date())
+    const startMonth = startOfMonth(new Date());
+    const endMonth = endOfMonth(new Date());
 
-    const startQuarter = startOfQuarter(new Date())
-    const endQuarter = endOfQuarter(new Date())
+    const startQuarter = startOfQuarter(new Date());
+    const endQuarter = endOfQuarter(new Date());
 
-    const startYear = startOfYear(new Date())
-    const endYear = endOfYear(new Date())
+    const startYear = startOfYear(new Date());
+    const endYear = endOfYear(new Date());
 
-    const formattedStartMonth = format(startMonth, 'dd/MM')
-    const formattedEndMonth = format(endMonth, 'dd/MM')
+    const formattedStartMonth = format(startMonth, "dd/MM");
+    const formattedEndMonth = format(endMonth, "dd/MM");
 
-    const formattedStartQuarter = format(startQuarter, 'dd/MM')
-    const formattedEndQuarter = format(endQuarter, 'dd/MM')
+    const formattedStartQuarter = format(startQuarter, "dd/MM");
+    const formattedEndQuarter = format(endQuarter, "dd/MM");
 
-    const formattedStartYear = format(startYear, 'dd/MM')
-    const formattedEndYear = format(endYear, 'dd/MM')
+    const formattedStartYear = format(startYear, "dd/MM");
+    const formattedEndYear = format(endYear, "dd/MM");
 
     return {
       options: [
-        `${t('period.thisweek')} (${formattedStartWeek} - ${formattedEndWeek})`,
-        `${t('period.thismonth')} (${formattedStartMonth} - ${formattedEndMonth})`,
-        `${t('period.thisquarter')} (${formattedStartQuarter} - ${formattedEndQuarter})`,
-        `${t('period.thisyear')} (${formattedStartYear} - ${formattedEndYear})`,
-        `${t('period.custom')} (${format(
+        `${t("period.thisweek")} (${formattedStartWeek} - ${formattedEndWeek})`,
+        `${t(
+          "period.thismonth"
+        )} (${formattedStartMonth} - ${formattedEndMonth})`,
+        `${t(
+          "period.thisquarter"
+        )} (${formattedStartQuarter} - ${formattedEndQuarter})`,
+        `${t("period.thisyear")} (${formattedStartYear} - ${formattedEndYear})`,
+        `${t("period.custom")} (${format(
           customPeriod?.startDate.toString() ?? new Date().toString(),
-          'dd/MM'
-        )} - ${format(customPeriod?.endDate?.toString() ?? new Date().toString(), 'dd/MM')})`,
+          "dd/MM"
+        )} - ${format(
+          customPeriod?.endDate?.toString() ?? new Date().toString(),
+          "dd/MM"
+        )})`,
       ],
       values: [
         [startWeek, endWeek],
@@ -162,16 +173,16 @@ const Page = () => {
         [startYear, endYear],
         [customPeriod?.startDate, customPeriod?.endDate],
       ],
-    }
+    };
   }, [customPeriod]) || [
-    t('period.thisweek'),
-    t('period.thismonth'),
-    t('period.thisquarter'),
-    t('period.thisyear'),
-    t('period.custom'),
+    t("period.thisweek"),
+    t("period.thismonth"),
+    t("period.thisquarter"),
+    t("period.thisyear"),
+    t("period.custom"),
 
-    'Cancel',
-  ]
+    "Cancel",
+  ];
 
   const renderBackdropCategoryModal = useCallback(
     (props: any) => (
@@ -180,16 +191,16 @@ const Page = () => {
         opacity={0.3}
         appearsOnIndex={0}
         disappearsOnIndex={-1}
-        pressBehavior='collapse'
+        pressBehavior="collapse"
         onPress={() => bottomSheetCategoryModalRef.current?.dismiss()}
       />
     ),
     []
-  )
+  );
 
   const showCategoryModal = async () => {
-    bottomSheetCategoryModalRef.current?.present()
-  }
+    bottomSheetCategoryModalRef.current?.present();
+  };
 
   const chooseCategoryHandler = (category: Category) => {
     setBudget((pre) => ({
@@ -198,9 +209,9 @@ const Page = () => {
         ...pre.attributes,
         categories: [category],
       },
-    }))
-    bottomSheetCategoryModalRef.current?.dismiss()
-  }
+    }));
+    bottomSheetCategoryModalRef.current?.dismiss();
+  };
 
   const selectCategory = (category: Category) => {
     setBudget((prev) => {
@@ -209,9 +220,11 @@ const Page = () => {
           ...prev,
           attributes: {
             ...prev.attributes,
-            categories: (prev.attributes as Budget).categories.filter((cat) => cat._id !== category._id),
+            categories: (prev.attributes as Budget).categories.filter(
+              (cat) => cat._id !== category._id
+            ),
           },
-        }
+        };
       } else {
         return {
           ...prev,
@@ -219,53 +232,52 @@ const Page = () => {
             ...prev.attributes,
             categories: [...(prev.attributes as Budget).categories, category],
           },
-        }
+        };
       }
-    })
-  }
+    });
+  };
 
   const openActionSheet = async () => {
-    const cancelButtonIndex = 4
+    const cancelButtonIndex = 4;
     showActionSheetWithOptions(
       {
         options,
         cancelButtonIndex,
-        title: t('budgets.selecttimerange'),
+        title: t("budgets.selecttimerange"),
       },
       (selectedIndex: any) => {
-        if(selectedIndex >= options.length) return 
+        if (selectedIndex >= options.length) return;
         if (selectedIndex === 4) {
-            setShowCalendar(true)
-        } 
-        setIndexOptions(selectedIndex)
+          setShowCalendar(true);
+        }
+        setIndexOptions(selectedIndex);
       }
-    )
-  }
+    );
+  };
 
   const handleCreateBudget = async () => {
-    //validate 
+    //validate
     const { isValid, message } = validations([
       {
-        field: 'title',
+        field: "title",
         value: budget.name,
-        validations: { required: [true, 'Title is required'] },
+        validations: { required: [true, "Title is required"] },
       },
       {
-        field: 'target_amount',
+        field: "target_amount",
         value: budget.attributes.target_amount.toString(),
-        validations: { required: [true, 'Target amount is required'] },
+        validations: { required: [true, "Target amount is required"] },
       },
       {
-        field: 'categories',
+        field: "categories",
         value: (budget.attributes as Budget).categories.length.toString(),
-        validations: { required: [true, 'Category is required'] },
+        validations: { required: [true, "Category is required"] },
       },
-    
-    ])
+    ]);
 
     if (!isValid) {
-      Alert.alert('Error', message)
-      return
+      Alert.alert("Error", message);
+      return;
     }
     try {
       await createBudget({
@@ -275,33 +287,39 @@ const Page = () => {
           end_date: values[indexOptions][1].toString(),
           attributes: {
             target_amount: Number(budget.attributes.target_amount),
-            categories: (budget.attributes as Budget).categories.map((category) => category._id),
+            categories: (budget.attributes as Budget).categories.map(
+              (category) => category._id
+            ),
             start_date: values[indexOptions][0].toString(),
           },
         },
-      }).unwrap()
-      setBudget(initialBudget)
-      router.back()
+      }).unwrap();
+      setBudget(initialBudget);
+      router.back();
     } catch (error) {
-      console.log('🚀 ~ handleCreateBudget ~ error', error)
+      console.log("🚀 ~ handleCreateBudget ~ error", error);
     }
-  }
-
-
+  };
 
   return (
     <View style={styles.container}>
       <Stack.Screen
         options={{
-          headerTitle: t('budgets.newbudget'),
+          headerTitle: t("budgets.newbudget"),
           header: (props) => (
             <Header
               {...props}
               headerLeft={() => (
                 <HeaderButton
-                  type='btn'
+                  type="btn"
                   onPress={() => router.back()}
-                  button={() => <AntDesign name='arrowleft' size={24} color={TextColor.Primary} />}
+                  button={() => (
+                    <AntDesign
+                      name="arrowleft"
+                      size={24}
+                      color={TextColor.Primary}
+                    />
+                  )}
                 />
               )}
             />
@@ -314,9 +332,9 @@ const Page = () => {
           isVisible={showCalendar}
           onBackdropPress={() => setShowCalendar(false)}
         >
-          <View style={{ alignItems: 'flex-end', padding: 12 }}>
+          <View style={{ alignItems: "flex-end", padding: 12 }}>
             <Pressable
-              style={{ justifyContent: 'center', alignItems: 'center' }}
+              style={{ justifyContent: "center", alignItems: "center" }}
               onPress={() => setShowCalendar(false)}
             >
               <X width={24} height={24} color={TextColor.Primary} />
@@ -324,7 +342,7 @@ const Page = () => {
           </View>
           <DateTimePicker
             height={300}
-            mode='range'
+            mode="range"
             timePicker={true}
             startDate={customPeriod?.startDate}
             endDate={customPeriod?.endDate}
@@ -332,14 +350,14 @@ const Page = () => {
               setCustomPeriod({
                 startDate,
                 endDate,
-              })
+              });
             }}
           />
         </Modal>
         <View style={{ paddingVertical: 32, gap: 24 }}>
           <View
             style={{
-              margin: 'auto',
+              margin: "auto",
               borderRadius: 24,
               borderColor: BrandColor.Gray[200],
               borderWidth: 1,
@@ -347,19 +365,24 @@ const Page = () => {
               paddingVertical: 8,
             }}
           >
-            <ThemedText type={TextType.SubheadlineRegular} color={TextColor.Secondary}>
-              {t('budgets.targetamount')}
+            <ThemedText
+              type={TextType.SubheadlineRegular}
+              color={TextColor.Secondary}
+            >
+              {t("budgets.targetamount")}
             </ThemedText>
           </View>
         </View>
         <View style={{ gap: 14 }}>
           <View style={{ marginVertical: 12, marginBottom: 30 }}>
             <CurrencyInput
-              placeholder='0'
+              placeholder="0"
               value={
-                budget.attributes.target_amount ? budget.attributes.target_amount.toString() : ''
+                budget.attributes.target_amount
+                  ? budget.attributes.target_amount.toString()
+                  : ""
               }
-              intlConfig={{ locale: 'de-DE', currency: currencyCode }}
+              intlConfig={{ locale: "de-DE", currency: currencyCode }}
               onValueChange={(text, values) => {
                 setBudget((prev) => ({
                   ...prev,
@@ -367,64 +390,84 @@ const Page = () => {
                     ...prev.attributes,
                     target_amount: Number(text),
                   },
-                }))
+                }));
               }}
               style={styles.currencyInput}
             />
           </View>
           <Input
-            placeholder={t('transaction.addtitle')}
+            placeholder={t("transaction.addtitle")}
             value={budget.name}
-            buttonLeft={() => <Image source={require('@/src/assets/icons/note.png')} />}
+            buttonLeft={() => (
+              <Image source={require("@/src/assets/icons/note.png")} />
+            )}
             onChangeText={(text) => {
               setBudget((pre) => {
-                return { ...pre, name: text }
-              })
+                return { ...pre, name: text };
+              });
             }}
             validationOptions={{
-              required: [true, 'Title is required'],
+              required: [true, "Title is required"],
             }}
-            validate={(isValid) => setIsValid((prev) => ({ ...prev, title: isValid }))}
+            validate={(isValid) =>
+              setIsValid((prev) => ({ ...prev, title: isValid }))
+            }
           />
           <Pressable onPress={showCategoryModal} style={styles.button}>
             <Image
               source={
                 budget.attributes.categories?.length > 0
                   ? getImg(budget.attributes.categories[0].icon)
-                  : require('@/src/assets/icons/categories.png')
+                  : require("@/src/assets/icons/categories.png")
               }
               style={styles.iconCategory}
             />
+
             <View style={{ flex: 8 }}>
-              <ThemedText type={TextType.FootnoteRegular} color={TextColor.Primary}>
+              <ThemedText
+                type={TextType.FootnoteRegular}
+                color={TextColor.Primary}
+              >
                 {budget.attributes.categories?.length > 0
                   ? budget.attributes.categories?.length === 1
-                    ? budget.attributes.categories[0].name
-                    : `${budget.attributes.categories[0].name} & more`
-                  : t('budgets.selectcategory')}
+                    ? t(`categories.${budget.attributes.categories[0].name}`)
+                    : t(`categories.${budget.attributes.categories[0].name}`) +
+                      ` && ${t("tabLabel.more")}`
+                  : t("budgets.selectcategory")}
               </ThemedText>
             </View>
-            <ChevronRight width={24} height={24} color={TextColor.Placeholder} />
+            <ChevronRight
+              width={24}
+              height={24}
+              color={TextColor.Placeholder}
+            />
           </Pressable>
 
           <SafeAreaView>
-            <View style={{ position: 'absolute', left: 0, top: 4 }}></View>
+            <View style={{ position: "absolute", left: 0, top: 4 }}></View>
             <View
               style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
               }}
             >
-              <Pressable onPress={openActionSheet} style={[styles.button, { width: '100%' }]}>
+              <Pressable
+                onPress={openActionSheet}
+                style={[styles.button, { width: "100%" }]}
+              >
                 <Image
-                  source={require('@/src/assets/icons/calendar.png')}
-                  style={{ width: 24, height: 24, resizeMode: 'contain' }}
+                  source={require("@/src/assets/icons/calendar.png")}
+                  style={{ width: 24, height: 24, resizeMode: "contain" }}
                 />
                 <View style={{ flex: 3 }}>
                   <Text>{options[indexOptions]}</Text>
                 </View>
-                <ChevronRight width={24} height={24} color={TextColor.Placeholder} />
+                <ChevronRight
+                  width={24}
+                  height={24}
+                  color={TextColor.Placeholder}
+                />
               </Pressable>
             </View>
           </SafeAreaView>
@@ -432,10 +475,10 @@ const Page = () => {
       </SafeAreaView>
       <View style={{ marginBottom: bottom + 24 }}>
         <Button
-          type={'primary'}
-          text={id ? t('actions.update') : t('actions.create')}
-          size={'large'}
-          state={'normal'}
+          type={"primary"}
+          text={id ? t("actions.update") : t("actions.create")}
+          size={"large"}
+          state={"normal"}
           onPress={handleCreateBudget}
           isLoading={createBudgetResult.isLoading}
         />
@@ -453,12 +496,15 @@ const Page = () => {
         <BottomSheetScrollView style={styles.bottomSheetModal}>
           <View style={styles.header}>
             <View style={styles.horizontalBar}></View>
-            <ThemedText type={TextType.CalloutSemibold} color={TextColor.Primary}>
-              {t('transaction.categories')}
+            <ThemedText
+              type={TextType.CalloutSemibold}
+              color={TextColor.Primary}
+            >
+              {t("transaction.categories")}
             </ThemedText>
           </View>
 
-          <View style={{ borderRadius: 14, marginTop: 24, overflow: 'hidden' }}>
+          <View style={{ borderRadius: 14, marginTop: 24, overflow: "hidden" }}>
             <ScrollView
               style={{
                 width: screenWidth - 48,
@@ -472,21 +518,27 @@ const Page = () => {
                   onPress={() => selectCategory(category)}
                 >
                   <View style={styles.iconCover}>
-                    <Image source={getImg(category.icon)} style={styles.iconCategory} />
+                    <Image
+                      source={getImg(category.icon)}
+                      style={styles.iconCategory}
+                    />
                   </View>
-                  <ThemedText type={TextType.SubheadlineRegular} color={TextColor.Primary}>
-                    {category.name}
+                  <ThemedText
+                    type={TextType.SubheadlineRegular}
+                    color={TextColor.Primary}
+                  >
+                    {t(`categories.${category.name}`)}
                   </ThemedText>
-                  <View style={{ position: 'absolute', right: 12 }}>
+                  <View style={{ position: "absolute", right: 12 }}>
                     <TouchableOpacity onPress={() => selectCategory(category)}>
                       {selectedCategoryIds.includes(category._id) ? (
                         <Image
-                          source={require('@/src/assets/icons/checked.png')}
+                          source={require("@/src/assets/icons/checked.png")}
                           style={{ width: 24, height: 24 }}
                         />
                       ) : (
                         <Image
-                          source={require('@/src/assets/icons/circle_plus2.png')}
+                          source={require("@/src/assets/icons/circle_plus2.png")}
                           style={{ width: 24, height: 24 }}
                         />
                       )}
@@ -499,9 +551,9 @@ const Page = () => {
         </BottomSheetScrollView>
       </BottomSheetModal>
     </View>
-  )
-}
-export default Page
+  );
+};
+export default Page;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -509,14 +561,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   item: {
-    width: '100%',
+    width: "100%",
     backgroundColor: BrandColor.Gray[50],
     paddingHorizontal: 12,
     paddingVertical: 12,
     borderBottomColor: BrandColor.Gray[100],
     borderBottomWidth: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 12,
   },
   iconCover: {
@@ -526,13 +578,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: BrandColor.Gray[200],
     backgroundColor: BackgroundColor.LightTheme.Primary,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   iconCategory: {
     width: 22,
     height: 22,
-    resizeMode: 'contain',
+    resizeMode: "contain",
   },
   bottomSheetModal: {
     width: screenWidth,
@@ -541,17 +593,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    width: '100%',
+    width: "100%",
     height: 60,
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingTop: 6,
     paddingBottom: 12,
     borderBottomColor: NeutralColor.GrayLight[100],
     borderBottomWidth: 1,
   },
   horizontalBar: {
-    width: '20%',
+    width: "20%",
     height: 6,
     backgroundColor: NeutralColor.GrayLight[50],
     borderRadius: 18,
@@ -561,10 +613,10 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 12,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     height: 54,
     width: screenWidth - 48,
     paddingHorizontal: 12,
@@ -577,17 +629,17 @@ const styles = StyleSheet.create({
   },
   currencyInput: {
     fontSize: 40,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: TextColor.Primary,
-    alignSelf: 'center',
+    alignSelf: "center",
     height: 60,
   },
   modal: {
     maxHeight: 400,
-    backgroundColor: '#F5FCFF',
+    backgroundColor: "#F5FCFF",
     borderRadius: 12,
     padding: 12,
-    margin: 'auto',
+    margin: "auto",
     marginHorizontal: 24,
   },
-})
+});
