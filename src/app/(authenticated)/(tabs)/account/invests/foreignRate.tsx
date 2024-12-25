@@ -7,7 +7,7 @@ type Props = {};
 const ForeignRate = (props: Props) => {
   return (
     <View style={styles.container}>
-      <WebView source={{ uri: "https://eximbank.com.vn/bang-ty-gia/" }} />
+      <WebView source={{ uri: "https://www.agribank.com.vn/vn/ty-gia" }} />
     </View>
   );
 };

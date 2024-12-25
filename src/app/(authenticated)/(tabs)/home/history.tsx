@@ -572,7 +572,8 @@ const history = () => {
                             color={TextColor.Primary}
                             style={{ textTransform: "capitalize" }}
                           >
-                            {title}
+                            {/* {title} */}
+                            {t(`home.${title}`)}
                           </ThemedText>
                         </View>
                         {data &&
@@ -592,7 +593,8 @@ const history = () => {
                                 type={TextType.SubheadlineRegular}
                                 color={TextColor.Primary}
                               >
-                                {cat.name}
+                                {/* {cat.name} */}
+                                {t(`categories.${cat.name}`)}
                               </ThemedText>
                               <View style={{ position: "absolute", right: 12 }}>
                                 <TouchableOpacity

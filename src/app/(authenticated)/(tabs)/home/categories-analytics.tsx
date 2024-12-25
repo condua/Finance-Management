@@ -1,120 +1,148 @@
-import TabButtons, { TabButtonType } from '@/src/components/navigation/TabButtons'
-import { ThemedText } from '@/src/components/ThemedText'
-import TransactionItem from '@/src/components/TransactionItem'
-import { BackgroundColor, BrandColor, NeutralColor, TextColor } from '@/src/constants/Colors'
-import { useLocale } from '@/src/hooks/useLocale'
-import { TextType } from '@/src/types/text'
-import { Href, Link, Stack, useLocalSearchParams } from 'expo-router'
-import { useRouter } from 'expo-router'
-import { useCallback, useMemo, useRef, useState } from 'react'
-import { Dimensions, Image, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native'
-import { StyleSheet, Text, View } from 'react-native'
+import TabButtons, {
+  TabButtonType,
+} from "@/src/components/navigation/TabButtons";
+import { ThemedText } from "@/src/components/ThemedText";
+import TransactionItem from "@/src/components/TransactionItem";
+import {
+  BackgroundColor,
+  BrandColor,
+  NeutralColor,
+  TextColor,
+} from "@/src/constants/Colors";
+import { useLocale } from "@/src/hooks/useLocale";
+import { TextType } from "@/src/types/text";
+import { Href, Link, Stack, useLocalSearchParams } from "expo-router";
+import { useRouter } from "expo-router";
+import { useCallback, useMemo, useRef, useState } from "react";
+import {
+  Dimensions,
+  Image,
+  SafeAreaView,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Dropdown } from 'react-native-element-dropdown'
-import AntDesign from '@expo/vector-icons/AntDesign'
-import { useAppDispatch, useAppSelector } from '@/src/hooks/hooks'
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Dropdown } from "react-native-element-dropdown";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import { useAppDispatch, useAppSelector } from "@/src/hooks/hooks";
 
-import { useGetAllTransactionsQuery } from '@/src/features/transaction/transaction.service'
+import { useGetAllTransactionsQuery } from "@/src/features/transaction/transaction.service";
 
-import Loading from '@/src/components/Loading'
-import { formatValue } from 'react-native-currency-input-fields'
-import { formatPieChart } from '@/src/utils/analytics'
-import { Category, Transaction } from '@/src/types/enum'
-import CustomPieChart from '@/src/components/charts/PieChart'
-import { handleStatistic } from '@/src/utils/handleStatistic'
-import { abbrValueFormat } from '@/src/utils/abbrValueFormat'
-import { useSettings } from '@/src/hooks/useSetting'
-import { getCurrencySymbol } from '@/src/utils/getCurrencySymbol'
-import Header from '@/src/components/navigation/Header'
-import HeaderButton from '@/src/components/navigation/HeaderButton'
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet'
-import { useGetAllCategoriesQuery } from '@/src/features/category/category.service'
-import { getImg } from '@/src/utils/getImgFromUri'
-import dayjs, { Dayjs } from 'dayjs'
-import Modal from 'react-native-modal'
-import DateTimePicker from 'react-native-ui-datepicker'
-import { Pressable } from 'react-native'
-import { X } from 'react-native-feather'
+import Loading from "@/src/components/Loading";
+import { formatValue } from "react-native-currency-input-fields";
+import { formatPieChart } from "@/src/utils/analytics";
+import { Category, Transaction } from "@/src/types/enum";
+import CustomPieChart from "@/src/components/charts/PieChart";
+import { handleStatistic } from "@/src/utils/handleStatistic";
+import { abbrValueFormat } from "@/src/utils/abbrValueFormat";
+import { useSettings } from "@/src/hooks/useSetting";
+import { getCurrencySymbol } from "@/src/utils/getCurrencySymbol";
+import Header from "@/src/components/navigation/Header";
+import HeaderButton from "@/src/components/navigation/HeaderButton";
+import {
+  BottomSheetBackdrop,
+  BottomSheetModal,
+  BottomSheetScrollView,
+} from "@gorhom/bottom-sheet";
+import { useGetAllCategoriesQuery } from "@/src/features/category/category.service";
+import { getImg } from "@/src/utils/getImgFromUri";
+import dayjs, { Dayjs } from "dayjs";
+import Modal from "react-native-modal";
+import DateTimePicker from "react-native-ui-datepicker";
+import { Pressable } from "react-native";
+import { X } from "react-native-feather";
 
 export enum CustomTab {
   Tab1,
   Tab2,
 }
 interface CategorySectionItem {
-  [key: string]: Category[]
+  [key: string]: Category[];
 }
 
-const screenWidth = Dimensions.get('window').width
+const screenWidth = Dimensions.get("window").width;
 
 const Page = () => {
-  const router = useRouter()
-  const { bottom, top } = useSafeAreaInsets()
-  const { type } = useLocalSearchParams() as { type: 'expense' | 'income' }
-  const [selectedTab, setSelectedTab] = useState<CustomTab>(CustomTab.Tab1)
-  const [selectedIndex, setSelectedIndex] = useState<number>()
-  const [period, setPeriod] = useState('day')
-  const [isFocusPeriod, setIsFocusPeriod] = useState(false)
-  const [categories, setCategories] = useState<string[]>([])
-  const [showCalendar, setShowCalendar] = useState(false)
+  const router = useRouter();
+  const { bottom, top } = useSafeAreaInsets();
+  const { type } = useLocalSearchParams() as { type: "expense" | "income" };
+  const [selectedTab, setSelectedTab] = useState<CustomTab>(CustomTab.Tab1);
+  const [selectedIndex, setSelectedIndex] = useState<number>();
+  const [period, setPeriod] = useState("day");
+  const [isFocusPeriod, setIsFocusPeriod] = useState(false);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [showCalendar, setShowCalendar] = useState(false);
   const [customPeriod, setCustomPeriod] = useState<
     | {
-        startDate: Dayjs
-        endDate: Dayjs
+        startDate: Dayjs;
+        endDate: Dayjs;
       }
     | undefined
   >({
     startDate: dayjs(),
     endDate: dayjs(),
-  })
+  });
 
-  const bottomSheetCategoryModalRef = useRef<BottomSheetModal>(null)
-  const snapPointsCategory = useMemo(() => ['85%'], [])
-  const { data: categoriesRes } = useGetAllCategoriesQuery()
+  const bottomSheetCategoryModalRef = useRef<BottomSheetModal>(null);
+  const snapPointsCategory = useMemo(() => ["85%"], []);
+  const { data: categoriesRes } = useGetAllCategoriesQuery();
 
-  const { t } = useLocale()
-  const { currencyCode } = useLocale()
+  const { t } = useLocale();
+  const { currencyCode } = useLocale();
   const buttons: TabButtonType[] = [
-    { title: t('analytics.expense') },
-    { title: t('analytics.income') },
-  ]
-  const dispatch = useAppDispatch()
-  const { walletId } = useAppSelector((state) => state.auth)
-  const { decimalSeparator, groupSeparator, showCurrency, disableDecimal, shortenAmount } =
-    useSettings().styleMoneyLabel
+    { title: t("analytics.expense") },
+    { title: t("analytics.income") },
+  ];
+  const dispatch = useAppDispatch();
+  const { walletId } = useAppSelector((state) => state.auth);
+  const {
+    decimalSeparator,
+    groupSeparator,
+    showCurrency,
+    disableDecimal,
+    shortenAmount,
+  } = useSettings().styleMoneyLabel;
 
   const periodOptions = [
-    { label: t('period.day'), value: 'day' },
-    { label: t('period.week'), value: 'week' },
-    { label: t('period.month'), value: 'month' },
-    { label: t('period.year'), value: 'year' },
-    { label: t('period.all'), value: 'all' },
+    { label: t("period.day"), value: "day" },
+    { label: t("period.week"), value: "week" },
+    { label: t("period.month"), value: "month" },
+    { label: t("period.year"), value: "year" },
+    { label: t("period.all"), value: "all" },
     {
-      label: t('period.custom'),
-      value: 'custom',
+      label: t("period.custom"),
+      value: "custom",
     },
-  ]
+  ];
 
-  const { isLoading, data, isError, isFetching } = useGetAllTransactionsQuery({
-    walletId: walletId!,
-    query: {
-      period,
-      sort: 'desc',
-      type: selectedTab === CustomTab.Tab1 ? 'expense' : 'income',
-      startDate: customPeriod?.startDate && customPeriod?.startDate.toString(),
-      endDate: customPeriod?.endDate ? customPeriod?.endDate?.toString() : dayjs().toString(),
+  const { isLoading, data, isError, isFetching } = useGetAllTransactionsQuery(
+    {
+      walletId: walletId!,
+      query: {
+        period,
+        sort: "desc",
+        type: selectedTab === CustomTab.Tab1 ? "expense" : "income",
+        startDate:
+          customPeriod?.startDate && customPeriod?.startDate.toString(),
+        endDate: customPeriod?.endDate
+          ? customPeriod?.endDate?.toString()
+          : dayjs().toString(),
+      },
+      categories: [...new Set(categories)],
     },
-    categories: [...new Set(categories)],
-  }, {
-    skip: showCalendar
-  })
+    {
+      skip: showCalendar,
+    }
+  );
   const handleSetCategories = (id: string) => {
     if (categories.includes(id)) {
-      setCategories((prev) => prev.filter((cat) => cat !== id))
+      setCategories((prev) => prev.filter((cat) => cat !== id));
     } else {
-      setCategories((prev) => [...prev, id])
+      setCategories((prev) => [...prev, id]);
     }
-  }
+  };
   const renderBackdropCategoryModal = useCallback(
     (props: any) => (
       <BottomSheetBackdrop
@@ -122,84 +150,93 @@ const Page = () => {
         opacity={0.3}
         appearsOnIndex={0}
         disappearsOnIndex={-1}
-        pressBehavior='collapse'
+        pressBehavior="collapse"
         onPress={() => bottomSheetCategoryModalRef.current?.dismiss()}
       />
     ),
     []
-  )
+  );
 
   const showCategoryModal = async () => {
-    bottomSheetCategoryModalRef.current?.present()
-  }
+    bottomSheetCategoryModalRef.current?.present();
+  };
 
   const balanceTotal = useMemo(() => {
-    return data?.reduce((acc, item) => acc + item.amount, 0)
-  }, [data])
+    return data?.reduce((acc, item) => acc + item.amount, 0);
+  }, [data]);
 
-  const dataChart = useMemo(() => formatPieChart(data as Transaction[]), [data])
+  const dataChart = useMemo(
+    () => formatPieChart(data as Transaction[]),
+    [data]
+  );
 
   const categoriesFilteredByType = useMemo(
     () =>
       categoriesRes?.filter((category) => {
         if (selectedTab === CustomTab.Tab1) {
-          return category.type === 'expense'
+          return category.type === "expense";
         } else {
-          return category.type === 'income'
+          return category.type === "income";
         }
       }),
     [categoriesRes, selectedTab]
-  )
+  );
 
   const categoriesSections = useMemo(() => {
     if (categoriesFilteredByType && categoriesFilteredByType.length > 0) {
       const grouped = categoriesFilteredByType.reduce(
         (acc: { [key: string]: Category[] }, item) => {
-          const key = item.type
+          const key = item.type;
           if (!acc[key]) {
-            acc[key] = []
+            acc[key] = [];
           }
-          acc[key].push(item)
-          return acc
+          acc[key].push(item);
+          return acc;
         },
         {} as CategorySectionItem
-      )
+      );
       return Object.entries(grouped).map(([key, value]) => ({
         title: key,
         data: value,
-      }))
+      }));
     }
     return [
       {
-        title: '',
+        title: "",
         data: [],
       },
-    ]
-  }, [categoriesFilteredByType])
+    ];
+  }, [categoriesFilteredByType]);
 
   return (
     <SafeAreaView style={styles.container}>
       <Stack.Screen
         options={{
-          headerTitle: t('analytics.header'),
+          headerTitle: t("analytics.header"),
           header: (props) => (
             <Header
               {...props}
               headerLeft={() => (
                 <HeaderButton
                   onPress={() => router.back()}
-                  type='btn'
-                  button={() => <AntDesign name='arrowleft' size={24} color={TextColor.Primary} />}
+                  type="btn"
+                  button={() => (
+                    <AntDesign
+                      name="arrowleft"
+                      size={24}
+                      color={TextColor.Primary}
+                    />
+                  )}
                 />
               )}
               headerRight={() => (
                 <HeaderButton
                   onPress={() => showCategoryModal()}
-                  type='btn'
+                  type="btn"
                   button={() => (
                     <Image
-                      source={require('@/src/assets/icons/filter.png')}
-                      style={{ width: 22, height: 22, resizeMode: 'contain' }}
+                      source={require("@/src/assets/icons/filter.png")}
+                      style={{ width: 22, height: 22, resizeMode: "contain" }}
                     />
                   )}
                 />
@@ -208,23 +245,23 @@ const Page = () => {
           ),
         }}
       />
-      <Loading isLoading={isFetching} text='Loading...' />
+      <Loading isLoading={isFetching} text="Loading..." />
       <Modal
         style={styles.modal}
         isVisible={showCalendar}
         onBackdropPress={() => setShowCalendar(false)}
       >
-        <View style={{ alignItems: 'flex-end', padding: 12 }}>
+        <View style={{ alignItems: "flex-end", padding: 12 }}>
           <Pressable
-            style={{ justifyContent: 'center', alignItems: 'center' }}
+            style={{ justifyContent: "center", alignItems: "center" }}
             onPress={() => setShowCalendar(false)}
           >
-            <X width={24} height={24} color={TextColor.Primary}/>
+            <X width={24} height={24} color={TextColor.Primary} />
           </Pressable>
         </View>
         <DateTimePicker
           height={300}
-          mode='range'
+          mode="range"
           timePicker={true}
           startDate={customPeriod?.startDate}
           endDate={customPeriod?.endDate}
@@ -232,38 +269,46 @@ const Page = () => {
             setCustomPeriod({
               startDate,
               endDate,
-            })
+            });
           }}
         />
       </Modal>
       <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1 }}>
         <View style={{ marginTop: 14 }}>
-          <TabButtons buttons={buttons} selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
+          <TabButtons
+            buttons={buttons}
+            selectedTab={selectedTab}
+            setSelectedTab={setSelectedTab}
+          />
         </View>
         <View style={styles.info}>
           <View>
             <ThemedText type={TextType.Title22Bold} color={TextColor.Primary}>
               {shortenAmount
-                ? abbrValueFormat(Number(balanceTotal), showCurrency, currencyCode)
+                ? abbrValueFormat(
+                    Number(balanceTotal),
+                    showCurrency,
+                    currencyCode
+                  )
                 : formatValue({
                     value: String(balanceTotal),
                     decimalSeparator: decimalSeparator,
                     groupSeparator: groupSeparator,
-                    suffix: showCurrency ? getCurrencySymbol(currencyCode) : '',
+                    suffix: showCurrency ? getCurrencySymbol(currencyCode) : "",
                     decimalScale: disableDecimal ? 0 : 2,
                   })}
             </ThemedText>
           </View>
           <Dropdown
-            style={[styles.dropdown, isFocusPeriod && { borderColor: 'blue' }]}
+            style={[styles.dropdown, isFocusPeriod && { borderColor: "blue" }]}
             selectedTextStyle={styles.selectedTextStyle}
             data={periodOptions}
             maxHeight={200}
-            labelField='label'
-            valueField='value'
+            labelField="label"
+            valueField="value"
             renderRightIcon={() => (
               <AntDesign
-                name='down'
+                name="down"
                 size={12}
                 color={BrandColor.PrimaryColor[400]}
                 style={styles.icon}
@@ -274,11 +319,11 @@ const Page = () => {
             onFocus={() => setIsFocusPeriod(true)}
             onBlur={() => setIsFocusPeriod(false)}
             onChange={(item) => {
-              if (item.value === 'custom') {
-                setShowCalendar(true)
+              if (item.value === "custom") {
+                setShowCalendar(true);
               }
-              setPeriod(item.value)
-              setIsFocusPeriod(false)
+              setPeriod(item.value);
+              setIsFocusPeriod(false);
             }}
           />
         </View>
@@ -288,11 +333,14 @@ const Page = () => {
 
         <View style={styles.historySection}>
           <View style={styles.headerSection}>
-            <ThemedText type={TextType.CalloutSemibold} color={TextColor.Primary}>
-              {t('home.history')}
+            <ThemedText
+              type={TextType.CalloutSemibold}
+              color={TextColor.Primary}
+            >
+              {t("home.history")}
             </ThemedText>
-            <Link href='/(authenticated)/(tabs)/home/history' asChild>
-              <Text style={styles.link}>{t('home.seeall')}</Text>
+            <Link href="/(authenticated)/(tabs)/home/history" asChild>
+              <Text style={styles.link}>{t("home.seeall")}</Text>
             </Link>
           </View>
           <View>
@@ -300,7 +348,7 @@ const Page = () => {
               <ThemedText
                 type={TextType.FootnoteRegular}
                 color={TextColor.Secondary}
-                style={{ textAlign: 'center', marginTop: 30 }}
+                style={{ textAlign: "center", marginTop: 30 }}
               >
                 {t(`home.notransactions`)}
               </ThemedText>
@@ -310,7 +358,7 @@ const Page = () => {
                 key={index}
                 onPress={() =>
                   router.navigate({
-                    pathname: '/(authenticated)/(tabs)/home/[id]',
+                    pathname: "/(authenticated)/(tabs)/home/[id]",
                     params: { id: item._id },
                   })
                 }
@@ -332,7 +380,7 @@ const Page = () => {
             style={styles.linkBtn}
             onPress={() =>
               router.navigate({
-                pathname: '/(authenticated)/(tabs)/home/history',
+                pathname: "/(authenticated)/(tabs)/home/history",
                 params: {
                   period,
                 },
@@ -340,11 +388,14 @@ const Page = () => {
             }
           >
             <Image
-              source={require('@/src/assets/icons/arrow-down-blue.png')}
-              style={{ width: 24, height: 24, resizeMode: 'contain' }}
+              source={require("@/src/assets/icons/arrow-down-blue.png")}
+              style={{ width: 24, height: 24, resizeMode: "contain" }}
             />
-            <ThemedText type={TextType.FootnoteRegular} color={BrandColor.Blue[600]}>
-              {t('actions.more')}
+            <ThemedText
+              type={TextType.FootnoteRegular}
+              color={BrandColor.Blue[600]}
+            >
+              {t("actions.more")}
             </ThemedText>
           </TouchableOpacity>
         )}
@@ -362,8 +413,11 @@ const Page = () => {
         <BottomSheetScrollView style={styles.bottomSheetModal}>
           <View style={styles.header}>
             <View style={styles.horizontalBar}></View>
-            <ThemedText type={TextType.CalloutSemibold} color={TextColor.Primary}>
-              {t('transaction.categories')}
+            <ThemedText
+              type={TextType.CalloutSemibold}
+              color={TextColor.Primary}
+            >
+              {t("transaction.categories")}
             </ThemedText>
           </View>
 
@@ -371,14 +425,14 @@ const Page = () => {
             <ScrollView>
               {categoriesSections &&
                 categoriesSections.map((item, index) => {
-                  const { title, data } = item
+                  const { title, data } = item;
                   return (
                     <View key={item.title}>
                       <View style={{ marginTop: 24, marginBottom: 12 }}>
                         <ThemedText
                           type={TextType.CalloutSemibold}
                           color={TextColor.Primary}
-                          style={{ textTransform: 'capitalize' }}
+                          style={{ textTransform: "capitalize" }}
                         >
                           {title}
                         </ThemedText>
@@ -391,7 +445,10 @@ const Page = () => {
                             onPress={() => handleSetCategories(cat._id)}
                           >
                             <View style={styles.iconCover}>
-                              <Image source={getImg(cat.icon)} style={styles.iconitem} />
+                              <Image
+                                source={getImg(cat.icon)}
+                                style={styles.iconitem}
+                              />
                             </View>
                             <ThemedText
                               type={TextType.SubheadlineRegular}
@@ -399,16 +456,18 @@ const Page = () => {
                             >
                               {cat.name}
                             </ThemedText>
-                            <View style={{ position: 'absolute', right: 12 }}>
-                              <TouchableOpacity onPress={() => handleSetCategories(cat._id)}>
+                            <View style={{ position: "absolute", right: 12 }}>
+                              <TouchableOpacity
+                                onPress={() => handleSetCategories(cat._id)}
+                              >
                                 {categories.includes(cat._id) ? (
                                   <Image
-                                    source={require('@/src/assets/icons/checked.png')}
+                                    source={require("@/src/assets/icons/checked.png")}
                                     style={{ width: 24, height: 24 }}
                                   />
                                 ) : (
                                   <Image
-                                    source={require('@/src/assets/icons/circle_plus2.png')}
+                                    source={require("@/src/assets/icons/circle_plus2.png")}
                                     style={{ width: 24, height: 24 }}
                                   />
                                 )}
@@ -417,7 +476,7 @@ const Page = () => {
                           </TouchableOpacity>
                         ))}
                     </View>
-                  )
+                  );
                 })}
             </ScrollView>
           </SafeAreaView>
@@ -425,9 +484,9 @@ const Page = () => {
         </BottomSheetScrollView>
       </BottomSheetModal>
     </SafeAreaView>
-  )
-}
-export default Page
+  );
+};
+export default Page;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -435,7 +494,7 @@ const styles = StyleSheet.create({
     backgroundColor: BackgroundColor.LightTheme.Primary,
   },
   chartSection: {
-    width: '100%',
+    width: "100%",
     marginVertical: 20,
   },
   historySection: {
@@ -444,22 +503,22 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerSection: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   link: {
-    color: '#2A85FF',
+    color: "#2A85FF",
     fontSize: 15,
     lineHeight: 20,
     letterSpacing: -0.4,
-    textTransform: 'capitalize',
+    textTransform: "capitalize",
   },
   info: {
     marginTop: 24,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   dropdown: {
     width: 100,
@@ -485,16 +544,16 @@ const styles = StyleSheet.create({
     height: 20,
   },
   btn100: {
-    width: '100%',
+    width: "100%",
     marginTop: 20,
   },
   linkBtn: {
     paddingBottom: 90,
     paddingTop: 20,
-    alignItems: 'center',
+    alignItems: "center",
     gap: 8,
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
   },
   bottomSheetModal: {
     width: screenWidth,
@@ -503,36 +562,36 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    width: '100%',
+    width: "100%",
     height: 60,
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingTop: 6,
     paddingBottom: 12,
     borderBottomColor: NeutralColor.GrayLight[100],
     borderBottomWidth: 1,
   },
   horizontalBar: {
-    width: '20%',
+    width: "20%",
     height: 6,
     backgroundColor: NeutralColor.GrayLight[50],
     borderRadius: 18,
   },
   item: {
-    width: '100%',
+    width: "100%",
     backgroundColor: BrandColor.Gray[50],
     paddingHorizontal: 12,
     paddingVertical: 12,
     borderBottomColor: BrandColor.Gray[100],
     borderBottomWidth: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 12,
   },
   iconitem: {
     width: 22,
     height: 22,
-    resizeMode: 'contain',
+    resizeMode: "contain",
   },
   iconCover: {
     width: 32,
@@ -541,15 +600,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: BrandColor.Gray[200],
     backgroundColor: BackgroundColor.LightTheme.Primary,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   modal: {
     maxHeight: 400,
-    backgroundColor: '#F5FCFF',
+    backgroundColor: "#F5FCFF",
     borderRadius: 12,
     padding: 12,
-    margin: 'auto',
+    margin: "auto",
     marginHorizontal: 24,
   },
-})
+});
